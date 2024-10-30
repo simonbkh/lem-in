@@ -16,6 +16,8 @@ type info struct {
 	end   string
 }
 
+var Link = make(map[string][]string)
+
 func main() {
 	arg := os.Args[1:]
 	if len(arg) != 1 {
@@ -28,6 +30,9 @@ func main() {
 func Parsing(fileName string) {
 	var stock string
 	stockSl := [][]string{}
+
+
+	
 	// rooms := make(map[interface{}]bool)
 	content, err := os.ReadFile(fileName)
 	if err != nil || len(content) == 0 {
@@ -47,10 +52,21 @@ func Parsing(fileName string) {
 	// st, fin := false, false
 
 	for scanner.Scan() {
+			if strings.HasPrefix(scanner.Text(), "#") {
+			if scanner.Text() == "##start" {
+				stock = scanner.Text()
+				continue
+				// st = true
+			} else if scanner.Text() == "##end" {
+				stock = scanner.Text()
+				continue
+				// fin = true
+			}
+		}
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				fmt.Println("ERROR: invalid data format")
+				fmt.Println("ERROR: invalid data formatt")
 				return
 			}
 			if nmilat >= 1 {
@@ -62,12 +78,8 @@ func Parsing(fileName string) {
 
 			fmt.Println(mok.nml)
 		}
-		// if st && len(mok.start) == 0 {
-		// 	if len(mok.start) == 0 {
-		// 		ysf := strings.Fields(scanner.Text())
-		// 		mok.start = ysf[0]
-		// 	}
-		// }
+
+	
 		if stock == "##start" && !strings.HasPrefix(scanner.Text(), "#") {
 			ysf := strings.Fields(scanner.Text())
 			if len(ysf) != 3 {
@@ -90,23 +102,26 @@ func Parsing(fileName string) {
 				if len(mok.end) == 3 {
 					stockSl = append(stockSl, ysf)
 				}
-				
-			}else{
+				if len(ysf) == 1 {
+					lin := strings.Split(scanner.Text(), "-")
+					if len(lin) == 2 {
+						Link[lin[0]] = append(Link[lin[0]], lin[1])
+					}else{
+						fmt.Println("ERROR: invalid data format")
+						return
+					}
+
+				}
+
+			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
 		}
-		if strings.HasPrefix(scanner.Text(), "#") {
-			if scanner.Text() == "##start" {
-				stock = scanner.Text()
-				// st = true
-			} else if scanner.Text() == "##end" {
-				stock = scanner.Text()
-				// fin = true
-			}
-		}
-
+	
+		i++
 	}
+	fmt.Println(Link)
 	fmt.Println(mok.start)
 	fmt.Println(mok.end)
 }
