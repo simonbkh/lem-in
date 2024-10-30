@@ -25,8 +25,6 @@ func main() {
 	Parsing(arg[0])
 }
 
-
-
 func Parsing(fileName string) {
 	var stock string
 	stockSl := [][]string{}
@@ -46,7 +44,7 @@ func Parsing(fileName string) {
 
 	scanner := bufio.NewScanner(file)
 	i := 0
-	st, fin := false, false
+	// st, fin := false, false
 
 	for scanner.Scan() {
 		if i == 0 {
@@ -57,22 +55,22 @@ func Parsing(fileName string) {
 			}
 			if nmilat >= 1 {
 				mok.nml = nmilat
-			} else if nmilat == 0 {
-				return
 			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
+
 			fmt.Println(mok.nml)
 		}
-		if st && len(mok.start) == 0 {
-			if len(mok.start) == 0 {
-				ysf := strings.Fields(scanner.Text())
-				mok.start = ysf[0]
-			}
-		}
-		if stock == "##start" {
+		// if st && len(mok.start) == 0 {
+		// 	if len(mok.start) == 0 {
+		// 		ysf := strings.Fields(scanner.Text())
+		// 		mok.start = ysf[0]
+		// 	}
+		// }
+		if stock == "##start"  {
 			ysf := strings.Fields(scanner.Text())
+			fmt.Println(ysf)
 			if len(ysf) != 3 {
 				fmt.Println("ERROR: invalid data format")
 				return
@@ -89,13 +87,12 @@ func Parsing(fileName string) {
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
 				stock = scanner.Text()
-				st = true
+				// st = true
 			} else if scanner.Text() == "##end" {
 				stock = scanner.Text()
-				fin = true
+				// fin = true
 			}
 		}
-		
 
 		i++
 	}
