@@ -70,20 +70,27 @@ func Parsing(fileName string) {
 		// }
 		if stock == "##start" && !strings.HasPrefix(scanner.Text(), "#") {
 			ysf := strings.Fields(scanner.Text())
-			fmt.Println(ysf)
 			if len(ysf) != 3 {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
 			stockSl = append(stockSl, ysf)
+			if len(mok.start) == 0 {
+				mok.start = ysf[0]
+			}
 			mok.start = stockSl[0][0]
 
 		}
 		if stock == "##end" {
 			if len(mok.start) != 0 {
 				ysf := strings.Fields(scanner.Text())
-				stockSl = append(stockSl, ysf)
-				mok.end = stockSl[1][0]
+				if len(mok.end) == 0 && len(ysf) == 3 {
+					mok.end = ysf[0]
+				}
+				if len(mok.end) == 3 {
+					stockSl = append(stockSl, ysf)
+				}
+				
 			}else{
 				fmt.Println("ERROR: invalid data format")
 				return
@@ -99,7 +106,6 @@ func Parsing(fileName string) {
 			}
 		}
 
-		i++
 	}
 	fmt.Println(mok.start)
 	fmt.Println(mok.end)
