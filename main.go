@@ -25,30 +25,18 @@ func main() {
 	Parsing(arg[0])
 }
 
+
+
 func Parsing(fileName string) {
-	//rooms := make(map[interface{}]bool)
+	var stock string
+	stockSl := [][]string{}
+	// rooms := make(map[interface{}]bool)
 	content, err := os.ReadFile(fileName)
 	if err != nil || len(content) == 0 {
 		fmt.Println("file dialk fih machkil a 3chiri")
 		return
 	}
-	// contSplited := strings.Split(string(content), string('\n'))
 
-	// for i, line := range contSplited {
-	// 	if i == 0 {
-	// 		nmilat, err := strconv.Atoi(line)
-	// 		if err != nil {
-	// 			fmt.Println("ERROR: invalid data format")
-	// 			return
-	// 		}
-	// 		if nmilat >= 1 {
-	// 			mok.nml = nmilat
-	// 		} else {
-	// 			fmt.Println("ERROR: invalid data format")
-	// 			return
-	// 		}
-	// 	}
-	// }
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -69,36 +57,45 @@ func Parsing(fileName string) {
 			}
 			if nmilat >= 1 {
 				mok.nml = nmilat
-			} else if nmilat == 0{
+			} else if nmilat == 0 {
 				return
-			}else{
+			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
 			fmt.Println(mok.nml)
 		}
-		if st{
+		if st && len(mok.start) == 0 {
 			if len(mok.start) == 0 {
-				ysf := strings.Split(scanner.Text(), " ")
-				
+				ysf := strings.Fields(scanner.Text())
 				mok.start = ysf[0]
 			}
-			
-
 		}
-		if fin  && len(mok.end) == 0 {
-			
-				ysf := strings.Split(scanner.Text(), " ")
-				mok.end = ysf[0]
-	
+		if stock == "##start" {
+			ysf := strings.Fields(scanner.Text())
+			if len(ysf) != 3 {
+				fmt.Println("ERROR: invalid data format")
+				return
+			}
+			stockSl = append(stockSl, ysf)
+			mok.start = stockSl[0][0]
+		}
+		if stock == "##end" {
+			ysf := strings.Fields(scanner.Text())
+			stockSl = append(stockSl, ysf)
+			mok.end = stockSl[0][0]
+
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
+				stock = scanner.Text()
 				st = true
 			} else if scanner.Text() == "##end" {
+				stock = scanner.Text()
 				fin = true
 			}
 		}
+		
 
 		i++
 	}
