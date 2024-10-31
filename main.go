@@ -66,7 +66,7 @@ func Parsing(fileName string) {
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				fmt.Println("ERROR: invalid data formatt")
+				fmt.Println(err)
 				return
 			}
 			if nmilat >= 1 {
@@ -77,6 +77,8 @@ func Parsing(fileName string) {
 			}
 
 			fmt.Println(mok.nml)
+			i++
+			continue
 		}
 
 	
@@ -86,11 +88,11 @@ func Parsing(fileName string) {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-			stockSl = append(stockSl, ysf)
+			//stockSl = append(stockSl, ysf)
 			if len(mok.start) == 0 {
 				mok.start = ysf[0]
 			}
-			mok.start = stockSl[0][0]
+			//mok.start = stockSl[0][0]
 
 		}
 		if stock == "##end" {
