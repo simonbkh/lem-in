@@ -68,11 +68,12 @@ func Parsing(fileName string, a *info) {
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
+				fmt.Println(stock)
 				if scanner.Text() != stock {
 					stock = scanner.Text()
 					continue
 				} else {
-					fmt.Println("ERROR: invalid data format")
+					fmt.Println("ERROR9: invalid data format")
 					return
 				}
 
@@ -111,23 +112,16 @@ func Parsing(fileName string, a *info) {
 			}
 			if len(a.start) == 0 {
 				a.start = ysf[0]
+			}else{
+				fmt.Println("ERROR: mok")
+				return
 			}
 			// mok.start = stockSl[0][0]
 		}
 		if stock == "##end" {
-			if len(a.start) != 0 {
-				ysf := strings.Fields(scanner.Text())
 				if len(a.end) == 0 && len(ysf) == 3 {
 					a.end = ysf[0]
 				}
-				// if len(a.end) == 3 {
-				// 	if !uniRooms[ysf[0]] {
-				// 		uniRooms[ysf[0]] = true
-				// 	} else {
-				// 		fmt.Println("room meawda a 3chiri")
-				// 		return
-				// 	}
-				// }
 				if len(ysf) == 1 {
 					lin := strings.Split(scanner.Text(), "-")
 					if len(lin) == 2 {
@@ -140,13 +134,13 @@ func Parsing(fileName string, a *info) {
 				}
 
 			} else {
-				fmt.Println("ERROR9: invalid data format")
+				fmt.Println("ERROR0: invalid data format")
 				return
 			}
 		}
 
 		i++
-	}
+	
 	fmt.Println(Link)
 	fmt.Println(a.start)
 	fmt.Println(a.end)
