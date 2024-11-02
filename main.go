@@ -49,6 +49,23 @@ func Parsing(fileName string, a *info) {
 	// st, fin := false, false
 
 	for scanner.Scan() {
+		if i == 0 {
+			nmilat, err := strconv.Atoi(scanner.Text())
+			if err != nil {
+				fmt.Println("ERROR: invalid data format")
+				return
+			}
+			if nmilat >= 1 {
+				a.nml = nmilat
+			} else {
+				fmt.Println("ERROR: invalid data format")
+				return
+			}
+
+			fmt.Println(a.nml)
+			i++
+			continue
+		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
 				if scanner.Text() != stock {
@@ -72,28 +89,13 @@ func Parsing(fileName string, a *info) {
 			}
 			continue
 		}
-		if i == 0 {
-			nmilat, err := strconv.Atoi(scanner.Text())
-			if err != nil {
-				fmt.Println("ERROR: invalid data format")
-				return
-			}
-			if nmilat >= 1 {
-				a.nml = nmilat
-			} else {
-				fmt.Println("ERROR: invalid data format")
-				return
-			}
-
-			fmt.Println(a.nml)
-			i++
-			continue
-		}
 		ysf := strings.Fields(scanner.Text())
-		if len(ysf) != 3 {
+		if scanner.Text() != "" {
+
+			// if len(ysf) != 3 {
 			fmt.Println(ysf)
-			return
-		}else{
+			// 	return
+			// }else{
 			if !uniRooms[ysf[0]] {
 				uniRooms[ysf[0]] = true
 			} else {
@@ -138,7 +140,7 @@ func Parsing(fileName string, a *info) {
 				}
 
 			} else {
-				fmt.Println("ERROR: invalid data format")
+				fmt.Println("ERROR9: invalid data format")
 				return
 			}
 		}
