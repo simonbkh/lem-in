@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-var mok info
-
 type info struct {
 	nml   int
 	start string
@@ -19,21 +17,20 @@ type info struct {
 var Link = make(map[string][]string)
 
 func main() {
+	var mok info
 	arg := os.Args[1:]
 	if len(arg) != 1 {
 		fmt.Println("khoya dak args raj3hom o raje3 rask meahom")
 		return
 	}
-	Parsing(arg[0])
+	Parsing(arg[0], &mok)
 }
 
-func Parsing(fileName string) {
+func Parsing(fileName string, a *info) {
 	var stock string
-	stockSl := [][]string{}
+	// stockSl := [][]string{}
 
-
-	
-	// rooms := make(map[interface{}]bool)
+	uniRooms := make(map[string]bool)
 	content, err := os.ReadFile(fileName)
 	if err != nil || len(content) == 0 {
 		fmt.Println("file dialk fih machkil a 3chiri")
@@ -52,63 +49,88 @@ func Parsing(fileName string) {
 	// st, fin := false, false
 
 	for scanner.Scan() {
-			if strings.HasPrefix(scanner.Text(), "#") {
+		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
-				stock = scanner.Text()
-				continue
+				if scanner.Text() != stock {
+					stock = scanner.Text()
+					continue
+				} else {
+					fmt.Println("ERROR: invalid data format")
+					return
+				}
+
 				// st = true
 			} else if scanner.Text() == "##end" {
-				stock = scanner.Text()
-				continue
+				if scanner.Text() != stock {
+					stock = scanner.Text()
+					continue
+				} else {
+					fmt.Println("ERROR: invalid data format")
+					return
+				}
 				// fin = true
 			}
+			continue
 		}
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("ERROR: invalid data format")
 				return
 			}
 			if nmilat >= 1 {
-				mok.nml = nmilat
+				a.nml = nmilat
 			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
 
-			fmt.Println(mok.nml)
+			fmt.Println(a.nml)
 			i++
 			continue
 		}
-
-	
+		ysf := strings.Fields(scanner.Text())
+		if len(ysf) != 3 {
+			fmt.Println(ysf)
+			return
+		}else{
+			if !uniRooms[ysf[0]] {
+				uniRooms[ysf[0]] = true
+			} else {
+				fmt.Println("room meawda a 3chiri")
+				return
+			}
+		}
 		if stock == "##start" && !strings.HasPrefix(scanner.Text(), "#") {
-			ysf := strings.Fields(scanner.Text())
+			// stockSl = append(stockSl, ysf)
 			if len(ysf) != 3 {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-			//stockSl = append(stockSl, ysf)
-			if len(mok.start) == 0 {
-				mok.start = ysf[0]
+			if len(a.start) == 0 {
+				a.start = ysf[0]
 			}
-			//mok.start = stockSl[0][0]
-
+			// mok.start = stockSl[0][0]
 		}
 		if stock == "##end" {
-			if len(mok.start) != 0 {
+			if len(a.start) != 0 {
 				ysf := strings.Fields(scanner.Text())
-				if len(mok.end) == 0 && len(ysf) == 3 {
-					mok.end = ysf[0]
+				if len(a.end) == 0 && len(ysf) == 3 {
+					a.end = ysf[0]
 				}
-				if len(mok.end) == 3 {
-					stockSl = append(stockSl, ysf)
-				}
+				// if len(a.end) == 3 {
+				// 	if !uniRooms[ysf[0]] {
+				// 		uniRooms[ysf[0]] = true
+				// 	} else {
+				// 		fmt.Println("room meawda a 3chiri")
+				// 		return
+				// 	}
+				// }
 				if len(ysf) == 1 {
 					lin := strings.Split(scanner.Text(), "-")
 					if len(lin) == 2 {
 						Link[lin[0]] = append(Link[lin[0]], lin[1])
-					}else{
+					} else {
 						fmt.Println("ERROR: invalid data format")
 						return
 					}
@@ -120,10 +142,11 @@ func Parsing(fileName string) {
 				return
 			}
 		}
-	
+
 		i++
 	}
 	fmt.Println(Link)
-	fmt.Println(mok.start)
-	fmt.Println(mok.end)
+	fmt.Println(a.start)
+	fmt.Println(a.end)
+	fmt.Println(uniRooms)
 }
