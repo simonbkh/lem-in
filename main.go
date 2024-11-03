@@ -17,6 +17,8 @@ type info struct {
 }
 
 var Link = make(map[string][]string)
+var Point = make(map[string]bool)
+var Cord = make(map[string]bool)
 
 func main() {
 	arg := os.Args[1:]
@@ -29,10 +31,7 @@ func main() {
 
 func Parsing(fileName string) {
 	var stock string
-	stockSl := [][]string{}
 
-
-	
 	// rooms := make(map[interface{}]bool)
 	content, err := os.ReadFile(fileName)
 	if err != nil || len(content) == 0 {
@@ -52,15 +51,19 @@ func Parsing(fileName string) {
 	// st, fin := false, false
 
 	for scanner.Scan() {
-			if strings.HasPrefix(scanner.Text(), "#") {
+		if strings.HasPrefix(scanner.Text(), "#") {
+
 			if scanner.Text() == "##start" {
 				stock = scanner.Text()
+				i++
 				continue
-				// st = true
 			} else if scanner.Text() == "##end" {
 				stock = scanner.Text()
+				i++
 				continue
-				// fin = true
+			} else {
+				i++
+				continue
 			}
 		}
 		if i == 0 {
@@ -75,55 +78,83 @@ func Parsing(fileName string) {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-
-			fmt.Println(mok.nml)
 			i++
 			continue
 		}
+		if stock == "" && i != 0 {
+			ysf := strings.Fields(scanner.Text())
+			if len(ysf) != 3 {
+				fmt.Println("ERROR: invalid data format")
+				return
+			} else if len(ysf) == 3 && !Point[ysf[0]] && !Cord[ysf[1]+" "+ysf[2]] {
+				Point[ysf[0]] = true
+			} else {
+				fmt.Println("ERROR: invalid data format")
+				return
+			}
 
-	
-		if stock == "##start" && !strings.HasPrefix(scanner.Text(), "#") {
+		}
+
+		if stock == "##start" {
+
 			ysf := strings.Fields(scanner.Text())
 			if len(ysf) != 3 {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-			//stockSl = append(stockSl, ysf)
-			if len(mok.start) == 0 {
-				mok.start = ysf[0]
+
+			if len(ysf) == 3 {
+				if len(mok.start) == 0 {
+					mok.start = ysf[0]
+				}
+				check(ysf)
 			}
-			//mok.start = stockSl[0][0]
 
 		}
-		if stock == "##end" {
-			if len(mok.start) != 0 {
-				ysf := strings.Fields(scanner.Text())
-				if len(mok.end) == 0 && len(ysf) == 3 {
-					mok.end = ysf[0]
-				}
-				if len(mok.end) == 3 {
-					stockSl = append(stockSl, ysf)
-				}
-				if len(ysf) == 1 {
-					lin := strings.Split(scanner.Text(), "-")
-					if len(lin) == 2 {
-						Link[lin[0]] = append(Link[lin[0]], lin[1])
-					}else{
-						fmt.Println("ERROR: invalid data format")
-						return
-					}
-
-				}
-
-			} else {
-				fmt.Println("ERROR: invalid data format")
-				return
+		if stock == "##end" && mok.start != "" {
+			ysf := strings.Fields(scanner.Text())
+			if mok.end == "" && len(ysf) == 3 {
+				mok.end = ysf[0]
 			}
+			if len(ysf) == 3 {
+				check(ysf)
+			}
+			if len(ysf) == 1 {
+				lin := strings.Split(scanner.Text(), "-")
+				if len(lin) == 2 {
+					Link[lin[0]] = append(Link[lin[0]], lin[1])
+				} else {
+					fmt.Println("ERROR: invalid data format")
+					return
+				}
+
+			}
+
+		} else if stock == "##end" && mok.start != "" {
+			fmt.Println("ERROR: invalid data format")
+			return
 		}
-	
 		i++
 	}
 	fmt.Println(Link)
 	fmt.Println(mok.start)
 	fmt.Println(mok.end)
+	fmt.Println(Link)
+}
+
+func check(ysf []string) {
+	for _, Numbre := range ysf[1:] {
+		nb, err := strconv.Atoi(Numbre)
+		if err != nil || nb < 0 {
+			fmt.Println("ERROR: invalid data format")
+			os.Exit(1)
+		}
+	}
+	if !Point[ysf[0]] {
+		Point[ysf[0]] = true
+		Cord[ysf[1]+" "+ysf[2]] = true
+	} else {
+		fmt.Println("ERROR: invalid data format")
+		os.Exit(1)
+	}
 }
