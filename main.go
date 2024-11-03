@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -28,8 +29,9 @@ func main() {
 
 func Parsing(fileName string, a *info) {
 	var st, fin bool
+	var conut int
 	// stockSl := [][]string{}
-	//cords := make(map[string]bool)
+	// cords := make(map[string]bool)
 	uniRooms := make(map[string]bool)
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -37,11 +39,8 @@ func Parsing(fileName string, a *info) {
 		return
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	i := 0
-	// st, fin := false, false
-
 	for scanner.Scan() {
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
@@ -49,22 +48,20 @@ func Parsing(fileName string, a *info) {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-			if nmilat >= 1 {
-				a.nml = nmilat
-			} else {
+			if nmilat < 1 {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-
+			a.nml = nmilat
 			fmt.Println(a.nml)
 			i++
 			continue
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
-				//fmt.Println(stock)
 				if !st {
 					st = true
+					conut++
 					continue
 				} else {
 					fmt.Println("ERROR9: invalid data format")
@@ -75,46 +72,41 @@ func Parsing(fileName string, a *info) {
 			} else if scanner.Text() == "##end" {
 				if !fin {
 					fin = true
+					conut++
 					continue
 				} else {
 					fmt.Println("ERROR*: invalid data format")
 					return
 				}
-				// fin = true
 			}
 			continue
 		}
 		ysf := strings.Fields(scanner.Text())
 		if scanner.Text() != "" {
-
-			// if len(ysf) != 3 {
-			// fmt.Println(ysf)
-			// 	return
-			// }else{
 			if len(ysf) == 3 {
-				if !uniRooms[ysf[0]] {
+				if !uniRooms[ysf[0]] && !(strings.HasPrefix(ysf[0], "L")) {
 					uniRooms[ysf[0]] = true
 				} else {
 					fmt.Println("room meawda a 3chiri")
 					return
 				}
-			} else if len(ysf) == 1 && st && fin{
+			} else if len(ysf) == 1 && st && fin {
 				lin := strings.Split(scanner.Text(), "-")
-				if len(lin) == 2 {
-					if uniRooms[lin[0]] {
-						Link[lin[0]] = append(Link[lin[0]], lin[1])
-					} else {
-						fmt.Println(scanner.Text())
-						fmt.Println("ERROR: room mam3rofach")
-						return
-					}
-
-				} else {
+				if len(lin) != 2 {
 					fmt.Println("ERROR$$: invalid data format")
 					return
 				}
+				if !(uniRooms[lin[0]] && uniRooms[lin[1]]) {
+					fmt.Println("ERROR: room mam3rofach")
+					return
+				}
+				if slices.Contains(Link[lin[1]], lin[0]) {
+					fmt.Println("had ruot rah m3awd", lin[0])
+					return
+				}
+				Link[lin[0]] = append(Link[lin[0]], lin[1])
 
-			}else{
+			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
@@ -123,21 +115,20 @@ func Parsing(fileName string, a *info) {
 			return
 		}
 		if st && len(a.start) == 0 {
-			// stockSl = append(stockSl, ysf)
-			if len(ysf) != 3 {
-				fmt.Println("ERROR': invalid data format")
+			if len(ysf) != 3 || conut != 1 {
+				fmt.Println("ERROR'333: invalid data format")
 				return
 			}
 			if len(a.start) == 0 {
 				a.start = ysf[0]
+				conut--
 			}
-			// mok.start = stockSl[0][0]
 		}
 		if fin && len(a.end) == 0 {
-			if len(ysf) == 3 {
+			if len(ysf) == 3 || conut != 1 {
 				a.end = ysf[0]
+				conut--
 			}
-
 		}
 	}
 
@@ -145,33 +136,28 @@ func Parsing(fileName string, a *info) {
 		fmt.Println("ERROR: invalid data format")
 		return
 	}
-	//endc , startc := false,false
-	//_, startc := Link[a.start]
-	
 	if !(check(a.end) && check(a.start)) {
 		fmt.Println("azeby start awla end ra mamlinkinch")
 		return
 	}
-	
-	
 
 	fmt.Println(Link)
 	fmt.Println(a.start)
 	fmt.Println(a.end)
 	fmt.Println(uniRooms)
-
 }
-func check(s string)bool{
-	_, ok :=  Link[s]
-	if  !ok{
+
+func check(s string) bool {
+	_, ok := Link[s]
+	if !ok {
 		for _, v := range Link {
 			for _, mok := range v {
 				if mok == s {
 					return true
 				}
 			}
-	   }
-	}else{
+		}
+	} else {
 		return true
 	}
 	return false

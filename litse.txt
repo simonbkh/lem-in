@@ -1,0 +1,39 @@
+//////////// hadi rah drt lih whd lhl dyl countur bax mb9ax start o end ykhdo nfs rom 
+1
+##start
+#commit
+##end
+1 0 0
+4 0 0
+2 0 0
+3 0 0
+1-2
+2-4
+2-3
+3-4
+//////////////// link kyt3wd tma matalant 1-2 o 2-1 had khso irj3
+1
+##start
+1 0 0
+##end
+4 0 0
+2 0 0
+3 0 0
+1-2
+2-4
+2-3
+2-1
+2-5
+3-4
+///////check  rom not allowd ex;ple rom 5 not found "2-5"
+1
+##start
+1 0 0
+##end
+4 0 0
+2 0 0
+3 0 0
+1-2
+2-4
+2-5
+3-4
