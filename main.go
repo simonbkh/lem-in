@@ -123,6 +123,7 @@ func Parsing(fileName string) {
 				lin := strings.Split(scanner.Text(), "-")
 				if len(lin) == 2 {
 					Link[lin[0]] = append(Link[lin[0]], lin[1])
+					Link[lin[1]] = append(Link[lin[1]], lin[0])
 				} else {
 					fmt.Println("ERROR: invalid data format")
 					return
@@ -136,10 +137,10 @@ func Parsing(fileName string) {
 		}
 		i++
 	}
-	fmt.Println(Link)
 	fmt.Println(mok.start)
 	fmt.Println(mok.end)
 	fmt.Println(Link)
+	BFS()
 }
 
 func check(ysf []string) {
@@ -157,4 +158,26 @@ func check(ysf []string) {
 		fmt.Println("ERROR: invalid data format")
 		os.Exit(1)
 	}
+}
+
+
+func BFS() {
+	slayce := [][]string{}
+	Taak := make(map[string]bool)
+	albdya := mok.start
+	sl := []string{albdya}
+	for len(sl)!=0{
+		albdya = sl[0]
+		if !Taak[albdya]{
+			Taak[albdya]=true
+			fmt.Println("hio")
+		for _,val := range Link[albdya]{
+			sl = append(sl, val)
+		}
+		
+		}
+		sl = sl[1:]
+		fmt.Println(sl)
+	}
+
 }
