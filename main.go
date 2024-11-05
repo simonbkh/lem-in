@@ -92,7 +92,7 @@ func Parsing(fileName string, a *info) {
 			} else if len(ysf) == 1 && st && fin {
 				lin := strings.Split(scanner.Text(), "-")
 				if len(lin) == 2 {
-					if uniRooms[lin[0]] { // nfekro flm3awda!
+					if uniRooms[lin[0]] &&   uniRooms[lin[1]]{ // nfekro flm3awda!
 						Link[lin[0]] = append(Link[lin[0]], lin[1])
 						Link[lin[1]] = append(Link[lin[1]], lin[0])
 
