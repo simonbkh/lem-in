@@ -61,20 +61,20 @@ func Parsing(fileName string, a *info) {
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
-				if !st {
+				if !st && len(a.end) == 0 && !fin{
 					st = true
 					continue
 				} else {
-					fmt.Println("ERROR9: invalid data format")
+					fmt.Println("ERROR9: invalid data format", scanner.Text())
 					return
 				}
 
 			} else if scanner.Text() == "##end" {
-				if !fin {
+				if !fin && len(a.start) != 0 {
 					fin = true
 					continue
 				} else {
-					fmt.Println("ERROR*: invalid data format")
+					fmt.Println("ERROR*: invalid data format", scanner.Text())
 					return
 				}
 			}
@@ -97,7 +97,7 @@ func Parsing(fileName string, a *info) {
 						Link[lin[1]] = append(Link[lin[1]], lin[0])
 
 					} else {
-						fmt.Println("ERROR: room mam3rofach")
+						fmt.Println("ERROR: room mam3rofach", scanner.Text())
 						return
 					}
 
