@@ -171,17 +171,20 @@ func findAllPaths(start, end string) [][]string {
 func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string) {
 	visited[start] = true
 	currentPath = append(currentPath, start)
-	fmt.Println(start,currentPath)
-	fmt.Println(visited)
+	// fmt.Println(start,currentPath)
+	// fmt.Println(visited)
 	//fmt.Println(currentPath)
 
 	if start == end {
-		*paths = append(*paths, append([]string{}, currentPath...))
+		*paths = append(*paths, append([]string{}, currentPath[1:]...))
 	} else {
 		for _, neighbor := range Link[start] {
 
 			if !visited[neighbor] {
 				dfs(neighbor, end, visited, currentPath, paths)
+			}
+			if (neighbor==end){
+				break
 			}
 		}
 	}
