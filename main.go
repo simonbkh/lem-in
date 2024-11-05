@@ -144,6 +144,10 @@ func Parsing(fileName string, a *info) {
 	fmt.Println(Link)
 	p := findAllPaths(a.start, a.end)
 	fmt.Println(p)
+
+	m := MesingPath(p)
+	fmt.Println(m)
+
 }
 func check(s string) bool {
 	_, ok := Link[s]
@@ -193,3 +197,47 @@ func dfs(start, end string, visited map[string]bool, currentPath []string, paths
 	//currentPath = currentPath[:len(currentPath)-1]
 }
 
+
+func MesingPath(paths [][]string) []int {
+	var pp [][]string
+	var p []int
+	var Nber int
+	for _, v := range paths {
+		for _, i := range v {
+			for _, j := range paths {
+				for _, k := range j {
+					if i == k {
+						Nber++
+					}
+				}
+				
+			}
+			
+		}
+		p = append(p, Nber)
+		Nber = 0
+	}
+
+	min, index := Asrar(p)
+	pp =append(pp, paths[index])
+
+	for _, v := range paths {
+		for _, i := range v {
+			
+		}
+	}
+	return p
+}
+
+func Asrar(p []int) (int, int) {
+	var min int
+	var index int
+	min = p[0]
+	for r, v := range p {
+		if v < min {
+			min = v
+			index = r
+		}
+	}
+	return min , index
+}
