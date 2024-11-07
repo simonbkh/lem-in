@@ -59,31 +59,31 @@ func Parsing(fileName string, a *info) {
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
-				if !st {
-					st = true
-					conut++
-					continue
-				} else {
+				if st {
 					fmt.Println("ERROR9: invalid data format")
 					return
 				}
-
-				// st = true
+				st = true
+				conut++
+				continue
 			} else if scanner.Text() == "##end" {
-				if !fin {
-					fin = true
-					conut++
-					continue
-				} else {
+				if fin {
 					fmt.Println("ERROR*: invalid data format")
 					return
 				}
+				fin = true
+				conut++
+				continue
 			}
 			continue
 		}
 		ysf := strings.Fields(scanner.Text())
 		if scanner.Text() != "" {
 			if len(ysf) == 3 {
+				if !CheckCordone(ysf) {
+					fmt.Println("cordone khata ")
+					return
+				}
 				if !uniRooms[ysf[0]] && !(strings.HasPrefix(ysf[0], "L")) {
 					uniRooms[ysf[0]] = true
 				} else {
@@ -161,4 +161,17 @@ func check(s string) bool {
 		return true
 	}
 	return false
+}
+
+func CheckCordone(sl []string) bool {
+	for i := 1; i < len(sl); i++ {
+		_, err := strconv.Atoi(sl[i])
+		if err != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func Checkdfs() {
 }
