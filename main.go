@@ -16,9 +16,10 @@ type info struct {
 }
 
 var Link = make(map[string][]string)
+var mok info
 
 func main() {
-	var mok info
+
 	arg := os.Args[1:]
 	if len(arg) != 1 {
 		fmt.Println("khoya dak args raj3hom o raje3 rask meahom")
@@ -173,5 +174,93 @@ func CheckCordone(sl []string) bool {
 	return true
 }
 
-func Checkdfs() {
+func CheckPath() {
+	var path [][]string
+	// checkDfs(&path, mok.start, []string{})
+	Bfs(&path)
+	// fmt.Println(path)
+}
+
+var roms = map[string]bool{}
+
+func checkDfs(path *[][]string, rom string, sl []string) {
+	start := rom
+	roms[start] = true
+	end := mok.end
+	sl = append(sl, start)
+	if start == end {
+		*path = append(*path, sl)
+	} else {
+		// if slices.Contains(Link[start], end){
+
+		// }
+		for _, v := range Link[start] {
+			if !roms[v] {
+				checkDfs(path, v, sl)
+			}
+		}
+	}
+	roms[start] = false
+}
+
+var (
+	qeu     []string
+	romlink = map[string][]string{}
+)
+
+func Bfs(path *[][]string) {
+	// count := 0
+	stare := mok.start
+	end := mok.end
+	roms[stare] = true
+	count := Apendqeu(stare)
+	fmt.Println(qeu)
+	for _, v := range qeu {
+		if count != 0 {
+			romlink[v] = append(romlink[v], stare, qeu[0])
+			count--
+			fmt.Println(qeu[0], stare, "mmmm")
+			// fmt.Println("kkk",stare,v,romlink)
+		}
+		if slices.Contains(Link[v], end) {
+			// index := slices.Index(Link[v], end)
+			romlink[v] = append(romlink[v], end)
+			qeu = qeu[1:]
+
+			continue
+			// if index != len(qeu)-1 {
+			// 	qeu = append(qeu[:index], qeu[index+1:]...)
+			// }
+
+		} else {
+
+			Apendqeu(v)
+			fmt.Println("kkk", qeu, v)
+			qeu = qeu[1:]
+			fmt.Println("kkk111", qeu, v, roms)
+		}
+		// romlink[v] = append(romlink[v], end)
+		//
+	}
+	fmt.Println(romlink)
+}
+
+func Rmovqeu(index int) {
+	qeu = qeu[1:]
+	qeu = append(qeu[:index], qeu[index+1:]...)
+}
+
+func Apendqeu(v string) int {
+	conut := 0
+	for _, c := range Link[v] {
+		// fmt.Println("hhhhhhhhhh", c,Link[v],v)
+		conut++
+		if !roms[c] {
+			qeu = append(qeu, c)
+			roms[c] = true
+		}
+
+	}
+
+	return conut
 }
