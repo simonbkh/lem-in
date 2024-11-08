@@ -14,9 +14,7 @@ type info struct {
 	end   string
 }
 
-var (
-	Link = make(map[string][]string)
-)
+var Link = make(map[string][]string)
 
 func main() {
 	var mok info
@@ -61,14 +59,13 @@ func Parsing(fileName string, a *info) {
 		}
 		if strings.HasPrefix(scanner.Text(), "#") {
 			if scanner.Text() == "##start" {
-				if !st && len(a.end) == 0 && !fin{
+				if !st && len(a.end) == 0 && !fin {
 					st = true
 					continue
 				} else {
 					fmt.Println("ERROR9: invalid data format", scanner.Text())
 					return
 				}
-
 			} else if scanner.Text() == "##end" {
 				if !fin && len(a.start) != 0 {
 					fin = true
@@ -92,7 +89,7 @@ func Parsing(fileName string, a *info) {
 			} else if len(ysf) == 1 && st && fin {
 				lin := strings.Split(scanner.Text(), "-")
 				if len(lin) == 2 {
-					if uniRooms[lin[0]] &&   uniRooms[lin[1]]{ // nfekro flm3awda!
+					if uniRooms[lin[0]] && uniRooms[lin[1]] { // nfekro flm3awda!
 						Link[lin[0]] = append(Link[lin[0]], lin[1])
 						Link[lin[1]] = append(Link[lin[1]], lin[0])
 
@@ -100,7 +97,6 @@ func Parsing(fileName string, a *info) {
 						fmt.Println("ERROR: room mam3rofach", scanner.Text())
 						return
 					}
-
 				} else {
 					fmt.Println("ERROR$$: invalid data format")
 					return
@@ -127,7 +123,6 @@ func Parsing(fileName string, a *info) {
 			if len(ysf) == 3 {
 				a.end = ysf[0]
 			}
-
 		}
 	}
 
@@ -136,69 +131,64 @@ func Parsing(fileName string, a *info) {
 		return
 	}
 
-	if !(check(a.end) && check(a.start)) {
+	if len(a.end) == 0 && len(a.start) == 0 {
 		fmt.Println("khoya!! start awla end ra mamlinkinch")
 		return
 	}
 
 	fmt.Println(Link)
-	p := findAllPaths(a.start, a.end)
+	p := findAllPaths(a)
 	fmt.Println(p)
 
 	m := MesingPath(p)
 	fmt.Println(m)
-
-}
-func check(s string) bool {
-	_, ok := Link[s]
-	if !ok {
-		for _, v := range Link {
-			for _, mok := range v {
-				if mok == s {
-					return true
-				}
-			}
-		}
-	} else {
-		return true
-	}
-	return false
 }
 
-func findAllPaths(start, end string) [][]string {
+func findAllPaths(m *info) [][]string {
 	var paths [][]string
 	visited := make(map[string]bool)
-	dfs(start, end, visited, []string{}, &paths)
+	dfs(m.start, m.end, visited, []string{}, &paths, m)
 	return paths
 }
 
-func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string) {
+func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string, m *info) {
 	visited[start] = true
 	currentPath = append(currentPath, start)
-	// fmt.Println(start,currentPath)
-	// fmt.Println(visited)
-	//fmt.Println(currentPath)
+	
 
 	if start == end {
-		*paths = append(*paths, append([]string{}, currentPath[1:]...))
+		*paths = append(*paths, append([]string{}, currentPath...))
 	} else {
-		for _, neighbor := range Link[start] {
-
-			if !visited[neighbor] {
-				dfs(neighbor, end, visited, currentPath, paths)
-			}
-			if (neighbor==end){
-				break
+		good := false
+		if start != m.start {
+			for _, v := range Link[start] {
+				if v == end {
+					good = true
+					currentPath = append(currentPath, v)
+					*paths = append(*paths, append([]string{}, currentPath...))
+					break
+				}
 			}
 		}
+		if !good {
+			for _, neighbor := range Link[start] {
+
+				if !visited[neighbor] {
+					dfs(neighbor, end, visited, currentPath, paths, m)
+				}
+				// if neighbor == end {
+				// 	break
+				// }
+			}
+		}
+
 	}
 
 	visited[start] = false
-	//currentPath = currentPath[:len(currentPath)-1]
+	// currentPath = currentPath[:len(currentPath)-1]
 }
 
-
-func MesingPath(paths [][]string) []int {
+func MesingPath(paths [][]string) [][]string {
 	var pp [][]string
 	var p []int
 	var Nber int
@@ -210,34 +200,61 @@ func MesingPath(paths [][]string) []int {
 						Nber++
 					}
 				}
-				
 			}
-			
 		}
 		p = append(p, Nber)
 		Nber = 0
 	}
 
-	min, index := Asrar(p)
-	pp =append(pp, paths[index])
+	mpp := make(map[string]bool)
+	for i := 0; i < len(p); i++ {
+		index := Small(&p)
 
-	for _, v := range paths {
-		for _, i := range v {
-			
+		if check(paths[index][1:len(paths[index])-1], &mpp) {
+			pp = append(pp, paths[index])
 		}
 	}
-	return p
+
+	// pp = append(pp, paths[index])
+	return pp
 }
 
-func Asrar(p []int) (int, int) {
+func Small(p *[]int) int {
 	var min int
 	var index int
-	min = p[0]
-	for r, v := range p {
-		if v < min {
+	min = (*p)[0]
+	for r, v := range *p {
+		if min == -1  && v !=-1{
+			min = v
+			index = r
+		}
+		if v == -1{
+			continue
+		}
+		if v < min  {
 			min = v
 			index = r
 		}
 	}
-	return min , index
+	(*p)[index] = -1
+	//fmt.Println(*p)
+	return index
+}
+
+func check(path []string, mp *map[string]bool) bool {
+	temp := []string{}
+	for _, room := range path {
+		if !(*mp)[room] {
+			(*mp)[room] = true
+			temp = append(temp, room)
+		} else {
+			for _, v := range temp {
+				delete((*mp), v)
+			}
+			fmt.Println("false")
+			return false
+		}
+	}
+	fmt.Println("true")
+	return true
 }
