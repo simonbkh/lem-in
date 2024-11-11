@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-var mok info
-
 type info struct {
 	nml   int
 	start string
@@ -17,28 +15,59 @@ type info struct {
 }
 
 var Link = make(map[string][]string)
-var Point = make(map[string]bool)
-var Cord = make(map[string]bool)
+
+func Print(Path *[][]string, a *info) {
+	mapp := make(map[int]int)
+	for i := 0; i < len(*Path); i++ {
+		mapp[i] = len((*Path)[i])
+	}
+
+	sl := make([][]string, len(*Path))
+	var sml int
+	var mapsmal int
+	for i := 1; i <= a.nml; i++ {
+		for j := 0; j < len(*Path); j++ {
+			if j == 0 {
+				sml = mapp[0]
+				mapsmal = 0
+			}
+			if mapp[j] < sml {
+				sml = mapp[j]
+				mapsmal = j
+			}
+		}
+		sl[mapsmal] = append(sl[mapsmal], strconv.Itoa(i))
+		mapp[mapsmal] = mapp[mapsmal] + 1
+	}
+	fmt.Println(len(mapp))
+	fmt.Println(mapp)
+	fmt.Println(sl)
+	 Mapcheck := make(map[string][]string)
+	for i := 0; i < len(sl); i++ {
+		for _ , va := range sl[i] {
+			 Mapcheck[va] = (*Path)[i]
+		}
+		
+	}
+	// sla := []string{}
+	// for key , valeu := range Mapcheck {
+		
+	// }
+}
 
 func main() {
+	var mok info
 	arg := os.Args[1:]
 	if len(arg) != 1 {
 		fmt.Println("khoya dak args raj3hom o raje3 rask meahom")
 		return
 	}
-	Parsing(arg[0])
+	Parsing(arg[0], &mok)
 }
 
-func Parsing(fileName string) {
-	var stock string
-
-	// rooms := make(map[interface{}]bool)
-	content, err := os.ReadFile(fileName)
-	if err != nil || len(content) == 0 {
-		fmt.Println("file dialk fih machkil a 3chiri")
-		return
-	}
-
+func Parsing(fileName string, a *info) {
+	var st, fin bool
+	uniRooms := make(map[string]bool)
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -48,136 +77,220 @@ func Parsing(fileName string) {
 
 	scanner := bufio.NewScanner(file)
 	i := 0
-	// st, fin := false, false
 
 	for scanner.Scan() {
-		if strings.HasPrefix(scanner.Text(), "#") {
-
-			if scanner.Text() == "##start" {
-				stock = scanner.Text()
-				i++
-				continue
-			} else if scanner.Text() == "##end" {
-				stock = scanner.Text()
-				i++
-				continue
-			} else {
-				i++
-				continue
-			}
-		}
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("ERROR: invalid data format")
 				return
 			}
 			if nmilat >= 1 {
-				mok.nml = nmilat
+				a.nml = nmilat
 			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
+
+			fmt.Println(a.nml)
 			i++
 			continue
 		}
-		if stock == "" && i != 0 {
-			ysf := strings.Fields(scanner.Text())
-			if len(ysf) != 3 {
-				fmt.Println("ERROR: invalid data format")
-				return
-			} else if len(ysf) == 3 && !Point[ysf[0]] && !Cord[ysf[1]+" "+ysf[2]] {
-				Point[ysf[0]] = true
+		if strings.HasPrefix(scanner.Text(), "#") {
+			if scanner.Text() == "##start" {
+				if !st && len(a.end) == 0 && !fin {
+					st = true
+					continue
+				} else {
+					fmt.Println("ERROR9: invalid data format", scanner.Text())
+					return
+				}
+			} else if scanner.Text() == "##end" {
+				if !fin && len(a.start) != 0 {
+					fin = true
+					continue
+				} else {
+					fmt.Println("ERROR*: invalid data format", scanner.Text())
+					return
+				}
+			}
+			continue
+		}
+		ysf := strings.Fields(scanner.Text())
+		if scanner.Text() != "" {
+			if len(ysf) == 3 {
+				if !uniRooms[ysf[0]] {
+					uniRooms[ysf[0]] = true
+				} else {
+					fmt.Println("room meawda a 3chiri")
+					return
+				}
+			} else if len(ysf) == 1 && st && fin {
+				lin := strings.Split(scanner.Text(), "-")
+				if len(lin) == 2 {
+					if uniRooms[lin[0]] && uniRooms[lin[1]] { // nfekro flm3awda!
+						Link[lin[0]] = append(Link[lin[0]], lin[1])
+						Link[lin[1]] = append(Link[lin[1]], lin[0])
+
+					} else {
+						fmt.Println("ERROR: room mam3rofach", scanner.Text())
+						return
+					}
+				} else {
+					fmt.Println("ERROR$$: invalid data format")
+					return
+				}
+
 			} else {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-
-		}
-
-		if stock == "##start" {
-
-			ysf := strings.Fields(scanner.Text())
-			if len(ysf) != 3 {
-				fmt.Println("ERROR: invalid data format")
-				return
-			}
-
-			if len(ysf) == 3 {
-				if len(mok.start) == 0 {
-					mok.start = ysf[0]
-				}
-				check(ysf)
-			}
-
-		}
-		if stock == "##end" && mok.start != "" {
-			ysf := strings.Fields(scanner.Text())
-			if mok.end == "" && len(ysf) == 3 {
-				mok.end = ysf[0]
-			}
-			if len(ysf) == 3 {
-				check(ysf)
-			}
-			if len(ysf) == 1 {
-				lin := strings.Split(scanner.Text(), "-")
-				if len(lin) == 2 {
-					Link[lin[0]] = append(Link[lin[0]], lin[1])
-					Link[lin[1]] = append(Link[lin[1]], lin[0])
-				} else {
-					fmt.Println("ERROR: invalid data format")
-					return
-				}
-
-			}
-
-		} else if stock == "##end" && mok.start != "" {
-			fmt.Println("ERROR: invalid data format")
+		} else {
+			fmt.Println("ERROR^: invalid data format")
 			return
 		}
-		i++
-	}
-	fmt.Println(mok.start)
-	fmt.Println(mok.end)
-	fmt.Println(Link)
-	BFS()
-}
-
-func check(ysf []string) {
-	for _, Numbre := range ysf[1:] {
-		nb, err := strconv.Atoi(Numbre)
-		if err != nil || nb < 0 {
-			fmt.Println("ERROR: invalid data format")
-			os.Exit(1)
+		if st && len(a.start) == 0 {
+			if len(ysf) != 3 {
+				fmt.Println("ERROR': invalid data format")
+				return
+			}
+			if len(a.start) == 0 {
+				a.start = ysf[0]
+			}
+		}
+		if fin && len(a.end) == 0 {
+			if len(ysf) == 3 {
+				a.end = ysf[0]
+			}
 		}
 	}
-	if !Point[ysf[0]] {
-		Point[ysf[0]] = true
-		Cord[ysf[1]+" "+ysf[2]] = true
-	} else {
+
+	if len(a.end) == 0 || len(a.start) == 0 {
 		fmt.Println("ERROR: invalid data format")
-		os.Exit(1)
+		return
 	}
+
+	if len(a.end) == 0 && len(a.start) == 0 {
+		fmt.Println("khoya!! start awla end ra mamlinkinch")
+		return
+	}
+
+	fmt.Println(Link)
+	p := findAllPaths(a)
+	fmt.Println(p)
+
+	m := MesingPath(p)
+	fmt.Println(m)
+	Print(&m, a)
 }
 
+func findAllPaths(m *info) [][]string {
+	var paths [][]string
+	visited := make(map[string]bool)
+	dfs(m.start, m.end, visited, []string{}, &paths, m)
+	return paths
+}
 
-func BFS() {
-	slayce := [][]string{}
-	Taak := make(map[string]bool)
-	albdya := mok.start
-	sl := []string{albdya}
-	for len(sl)!=0{
-		albdya = sl[0]
-		if !Taak[albdya]{
-			Taak[albdya]=true
-			fmt.Println("hio")
-		for _,val := range Link[albdya]{
-			sl = append(sl, val)
+func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string, m *info) {
+	visited[start] = true
+	currentPath = append(currentPath, start)
+
+	if start == end {
+		*paths = append(*paths, append([]string{}, currentPath...))
+	} else {
+		good := false
+		if start != m.start {
+			for _, v := range Link[start] {
+				if v == end {
+					good = true
+					currentPath = append(currentPath, v)
+					*paths = append(*paths, append([]string{}, currentPath...))
+					break
+				}
+			}
 		}
-		
+		if !good {
+			for _, neighbor := range Link[start] {
+				if !visited[neighbor] {
+					dfs(neighbor, end, visited, currentPath, paths, m)
+				}
+			
+			}
 		}
-		sl = sl[1:]
-		fmt.Println(sl)
+
 	}
 
+	visited[start] = false
+	// currentPath = currentPath[:len(currentPath)-1]
+}
+
+func MesingPath(paths [][]string) [][]string {
+	var pp [][]string
+	var p []int
+	var Nber int
+	for _, v := range paths {
+		for _, i := range v {
+			for _, j := range paths {
+				for _, k := range j {
+					if i == k {
+						Nber++
+					}
+				}
+			}
+		}
+		p = append(p, Nber)
+		Nber = 0
+	}
+
+	mpp := make(map[string]bool)
+	for i := 0; i < len(p); i++ {
+		index := Small(&p)
+
+		if check(paths[index][1:len(paths[index])-1], &mpp) {
+			pp = append(pp, paths[index][1:])
+		}
+	}
+
+	// pp = append(pp, paths[index])
+	return pp
+}
+
+func Small(p *[]int) int {
+	var min int
+	var index int
+	min = (*p)[0]
+	for r, v := range *p {
+		if min == -1 && v != -1 {
+			min = v
+			index = r
+		}
+		if v == -1 {
+			continue
+		}
+		if v < min {
+			min = v
+			index = r
+		}
+	}
+	(*p)[index] = -1
+	// fmt.Println(*p)
+	return index
+}
+
+func check(path []string, mp *map[string]bool) bool {
+	temp := []string{}
+	for _, room := range path {
+		if !(*mp)[room] {
+			(*mp)[room] = true
+			temp = append(temp, room)
+		} else {
+			for _, v := range temp {
+				delete((*mp), v)
+			}
+			fmt.Println("false")
+			return false
+		}
+	}
+	fmt.Println("true")
+	return true
 }
