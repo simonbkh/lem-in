@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -12,6 +13,54 @@ type info struct {
 	nml   int
 	start string
 	end   string
+}
+
+type nmilaat struct {
+	name int
+	path []string
+	room string
+}
+
+var prt []nmilaat
+
+func printer(mok *info, mat [][]string) {
+	mp := make(map[string]bool)
+	var p nmilaat
+	pathCost := []int{}
+	for _, v := range mat {
+		pathCost = append(pathCost, len(v[1:]))
+	}
+	for i := 1; i <= mok.nml; i++ {
+		p.name = i
+		ii := slices.Index(pathCost, slices.Min(pathCost))
+		pathCost[ii]++
+		p.path = mat[ii][1:]
+		prt = append(prt, p)
+		p = nmilaat{}
+
+	}
+	for {
+		for _, nmla := range prt {
+			if len(nmla.path) != 0 {
+				if nmla.room == mok.end {
+					fmt.Printf("L%d-%v ", nmla.name, mok.end)
+					nmla.path = []string{}
+					continue
+				}
+				if mp[nmla.room] {
+					mp[nmla.room] = false
+				} else {
+					fmt.Printf("L%d-%v ", nmla.name, nmla.path[0])
+					nmla.room = nmla.path[0]
+					mp[nmla.path[0]] = true
+					nmla.path = nmla.path[0:]
+				}
+
+			}
+		}
+	}
+	//fmt.Println(prt)
+	// fmt.Println(pathCost)
 }
 
 var Link = make(map[string][]string)
@@ -142,6 +191,7 @@ func Parsing(fileName string, a *info) {
 
 	m := MesingPath(p)
 	fmt.Println(m)
+	printer(a, m)
 }
 
 func findAllPaths(m *info) [][]string {
@@ -154,7 +204,6 @@ func findAllPaths(m *info) [][]string {
 func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string, m *info) {
 	visited[start] = true
 	currentPath = append(currentPath, start)
-	
 
 	if start == end {
 		*paths = append(*paths, append([]string{}, currentPath...))
@@ -172,7 +221,6 @@ func dfs(start, end string, visited map[string]bool, currentPath []string, paths
 		}
 		if !good {
 			for _, neighbor := range Link[start] {
-
 				if !visited[neighbor] {
 					dfs(neighbor, end, visited, currentPath, paths, m)
 				}
@@ -224,20 +272,20 @@ func Small(p *[]int) int {
 	var index int
 	min = (*p)[0]
 	for r, v := range *p {
-		if min == -1  && v !=-1{
+		if min == -1 && v != -1 {
 			min = v
 			index = r
 		}
-		if v == -1{
+		if v == -1 {
 			continue
 		}
-		if v < min  {
+		if v < min {
 			min = v
 			index = r
 		}
 	}
 	(*p)[index] = -1
-	//fmt.Println(*p)
+	// fmt.Println(*p)
 	return index
 }
 
