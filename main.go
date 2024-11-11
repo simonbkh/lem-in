@@ -26,6 +26,7 @@ func main() {
 		return
 	}
 	Parsing(arg[0], &mok)
+	CheckPath()
 }
 
 func Parsing(fileName string, a *info) {
@@ -54,7 +55,7 @@ func Parsing(fileName string, a *info) {
 				return
 			}
 			a.nml = nmilat
-			fmt.Println(a.nml)
+			// fmt.Println(a.nml)
 			i++
 			continue
 		}
@@ -142,10 +143,10 @@ func Parsing(fileName string, a *info) {
 		return
 	}
 
-	fmt.Println(Link)
-	fmt.Println(a.start)
-	fmt.Println(a.end)
-	fmt.Println(uniRooms)
+	// fmt.Println(Link)
+	// fmt.Println(a.start)
+	// fmt.Println(a.end)
+	// fmt.Println(uniRooms)
 }
 
 func check(s string) bool {
@@ -203,64 +204,122 @@ func checkDfs(path *[][]string, rom string, sl []string) {
 	roms[start] = false
 }
 
-var (
-	qeu     []string
-	romlink = map[string][]string{}
-)
 
-func Bfs(path *[][]string) {
+////////////////////////////////
+func Bfs(path *[][]string, start string, sl []string) {
 	// count := 0
-	stare := mok.start
+	// start := str
 	end := mok.end
-	roms[stare] = true
-	count := Apendqeu(stare)
-	fmt.Println(qeu)
-	for _, v := range qeu {
-		if count != 0 {
-			romlink[v] = append(romlink[v], stare, qeu[0])
-			count--
-			fmt.Println(qeu[0], stare, "mmmm")
-			// fmt.Println("kkk",stare,v,romlink)
+	queue := []string{start}
+	visited := map[string][]string{start: {"none"}}
+	for len(queue) > 0 {
+		current := queue[0]
+		fmt.Println("kkkkk")
+		queue = queue[1:]
+		// if current == end {
+		// 	break
+		// }
+		fmt.Println(Link[current], current)
+		for _, v := range Link[current] {
+
+			_, found := visited[v]
+			if !found || v == end {
+				fmt.Println("---", v)
+				visited[v] = append(visited[v], current)
+				queue = append(queue, v)
+			}
+
 		}
-		if slices.Contains(Link[v], end) {
-			// index := slices.Index(Link[v], end)
-			romlink[v] = append(romlink[v], end)
-			qeu = qeu[1:]
-
-			continue
-			// if index != len(qeu)-1 {
-			// 	qeu = append(qeu[:index], qeu[index+1:]...)
-			// }
-
-		} else {
-
-			Apendqeu(v)
-			fmt.Println("kkk", qeu, v)
-			qeu = qeu[1:]
-			fmt.Println("kkk111", qeu, v, roms)
-		}
-		// romlink[v] = append(romlink[v], end)
-		//
 	}
-	fmt.Println(romlink)
+	// *path = append(*path, )
+	fmt.Println(visited)
+	// backtrackPath(visited, end, path, []string{})
+	// fmt.Println(path)
 }
 
-func Rmovqeu(index int) {
-	qeu = qeu[1:]
-	qeu = append(qeu[:index], qeu[index+1:]...)
-}
-
-func Apendqeu(v string) int {
-	conut := 0
-	for _, c := range Link[v] {
-		// fmt.Println("hhhhhhhhhh", c,Link[v],v)
-		conut++
-		if !roms[c] {
-			qeu = append(qeu, c)
-			roms[c] = true
+func backtrackPath(visited map[string][]string, end string, paths *[][]string, path []string) {
+	current := end
+	path = append(path, current)
+	if current == "1" || (len(*paths)!=0 && slices.Contains(*paths[0],current)){
+		*paths = append(*paths, path)
+	} else {
+		for _, v := range visited[current] {
+			backtrackPath(visited, v, paths, path)
 		}
-
 	}
+	fmt.Println(paths)
+	//
 
-	return conut
+	// reverse(path)
+	// return path
 }
+
+func reverse(array []string) {
+	for i, j := 0, len(array)-1; i < j; i, j = i+1, j-1 {
+		array[i], array[j] = array[j], array[i]
+	}
+}
+
+
+///////////////////////////////////
+// var (
+// 	qeu     []string
+// 	romlink = map[string][]string{}
+// )
+// ////////////////////////////
+// func Bfs(path *[][]string) {
+// 	// count := 0
+// 	stare := mok.start
+// 	end := mok.end
+// 	roms[stare] = true
+// 	count := Apendqeu(stare)
+// 	fmt.Println(qeu)
+// 	for _, v := range qeu {
+// 		// if count != 0 {
+// 			romlink[v] = append(romlink[v], qeu[0])
+// 			count--
+// 			fmt.Println(qeu[0], stare, "mmmm")
+// 		// 	// fmt.Println("kkk",stare,v,romlink)
+// 		// }
+// 		if slices.Contains(Link[v], end) {
+// 			// index := slices.Index(Link[v], end)
+// 			romlink[v] = append(romlink[v], end)
+// 			qeu = qeu[1:]
+
+// 			continue
+// 			// if index != len(qeu)-1 {
+// 			// 	qeu = append(qeu[:index], qeu[index+1:]...)
+// 			// }
+
+// 		} else {
+
+// 			Apendqeu(v)
+// 			fmt.Println("kkk", qeu, v)
+// 			qeu = qeu[1:]
+// 			fmt.Println("kkk111", qeu, v, roms)
+// 		}
+// 		// romlink[v] = append(romlink[v], end)
+// 		//
+// 	}
+// 	fmt.Println(romlink)
+// }
+
+// func Rmovqeu(index int) {
+// 	qeu = qeu[1:]
+// 	qeu = append(qeu[:index], qeu[index+1:]...)
+// }
+
+// func Apendqeu(v string) int {
+// 	conut := 0
+// 	for _, c := range Link[v] {
+// 		// fmt.Println("hhhhhhhhhh", c,Link[v],v)
+// 		conut++
+// 		if !roms[c] {
+// 			qeu = append(qeu, c)
+// 			roms[c] = true
+// 		}
+
+// 	}
+
+// 	return conut
+// }
