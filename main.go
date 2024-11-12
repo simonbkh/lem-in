@@ -52,10 +52,12 @@ func Print(Path *[][]string, a *info) {
 	fmt.Println(Mapcheck)
 	sla := []string{}
 	var s string
+	//fmt.Println(Mapcheck)
 	for {
 		for key , valeu := range Mapcheck {
 			if len(valeu) !=0 {
-				if !Chekslayce(sla, valeu[0]) {
+				// fmt.Println(valeu)
+				if !Chekslayce(sla, valeu[0]) || a.end == valeu[0] {
 					sla = append(sla,valeu[0])
 					s += "L"+key+"-"+valeu[0]+" "
 					Mapcheck[key] = valeu[1:]
@@ -74,14 +76,12 @@ func Print(Path *[][]string, a *info) {
 	
 }
 
-func Chekslayce(Path []string, s string, )bool {
+func Chekslayce(Path []string, s string,)bool {
 	for _, v := range Path {
 		if v == s {
 			return true
 		}
-		// if v == *a {
-		// 	return false
-		// }
+		
 	}
 	return false
 
