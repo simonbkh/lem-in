@@ -52,18 +52,27 @@ func Print(Path *[][]string, a *info) {
 	fmt.Println(Mapcheck)
 	sla := []string{}
 	var s string
-	//fmt.Println(Mapcheck)
+	var index = 1
 	for {
-		for key , valeu := range Mapcheck {
-			if len(valeu) !=0 {
-				// fmt.Println(valeu)
-				if !Chekslayce(sla, valeu[0]) || a.end == valeu[0] {
-					sla = append(sla,valeu[0])
-					s += "L"+key+"-"+valeu[0]+" "
-					Mapcheck[key] = valeu[1:]
+		if index == a.nml {
+			break
+		}else {
+			index = 1
+		}
+	
+			for i := 1; i <= a.nml; i++ {
+				in := strconv.Itoa(i)
+				if len(Mapcheck[in]) !=0 {
+					if !Chekslayce(sla, Mapcheck[in][0]) || a.end ==Mapcheck[in][0] {
+						sla = append(sla, Mapcheck[in][0])
+						s += "L"+in+"-"+ Mapcheck[in][0]+" "
+						Mapcheck[in] = Mapcheck[in][1:]
+					}
+				}else {
+					 index++
 				}
 			}
-		}
+			
 		if s == "" {
 			break
 		}
