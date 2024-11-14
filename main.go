@@ -17,16 +17,15 @@ type info struct {
 var Link = make(map[string][]string)
 
 func Print(Path *[][]string, a *info) {
-
 	mapp := make(map[int]int)
-	
-	for i := 0; i < len(*Path); i++ {//had lop drtha bax n7at lin dyal kola path 
+
+	for i := 0; i < len(*Path); i++ { // had lop drtha bax n7at lin dyal kola path
 		mapp[i] = len((*Path)[i])
 	}
-	
-	sl := make([][]string, len(*Path))//
-	var sml int///had variable drto bax n7dd bih bih asra4 len(dyal path)
-	var mapsmal int /// had variable drto bax n7dd bih alblasa axmn path atmchi fih nmla dyali
+
+	sl := make([][]string, len(*Path)) //
+	var sml int                        ///had variable drto bax n7dd bih bih asra4 len(dyal path)
+	var mapsmal int                    /// had variable drto bax n7dd bih alblasa axmn path atmchi fih nmla dyali
 	for i := 1; i <= a.nml; i++ {
 		for j := 0; j < len(*Path); j++ {
 			if j == 0 {
@@ -42,46 +41,47 @@ func Print(Path *[][]string, a *info) {
 		mapp[mapsmal] = mapp[mapsmal] + 1
 	}
 	Checkbool := make(map[int]bool)
-	for x, _ := range *Path {
+	for x := range *Path {
 		Checkbool[x] = false
 	}
 
-	
-	 
-	 Mapcheck := make(map[string][]string)////had almap kan7at fih path dyal kola nmla 
-	for i := 0; i < len(sl); i++ {////kanlopi 3la path dyal kola wa7da o kan3tald 3la index bax n7at path alkola wa7da 
-		for _ , va := range sl[i] { ////mital [[1 4 7 10] [2 5 8] [3 6 9]]
-			 Mapcheck[va] = (*Path)[i]
+	Mapcheck := make(map[string][]string) ////had almap kan7at fih path dyal kola nmla
+	for i := 0; i < len(sl); i++ {        ////kanlopi 3la path dyal kola wa7da o kan3tald 3la index bax n7at path alkola wa7da
+		for _, va := range sl[i] { ////mital [[1 4 7 10] [2 5 8] [3 6 9]]
+			Mapcheck[va] = (*Path)[i]
 		}
-		
 	}
-	
-	sla := []string{}
-	
-	var s string // had var bax n5zn tour L1-E L2-A L3-o L4-t L5-h L6-0 
-	for {
-			for i := 1; i <= a.nml; i++ {
-				in := strconv.Itoa(i)
-				if len(Mapcheck[in]) !=0 {
-					if !Chekslayce(sla, Mapcheck[in][0]) || a.end ==Mapcheck[in][0] {
-						if Mapcheck[in][0] == a.end {
-							if Checkbool[fnd(sl, in)]{
-								continue
-							}else{
-								Checkbool[fnd(sl, in)] = true
-							}
-						}
-						sla = append(sla, Mapcheck[in][0])
-						s += "L"+in+"-"+ Mapcheck[in][0]+" "
-						Mapcheck[in] = Mapcheck[in][1:]
-					}
-				}
 
+	sla := []string{}
+
+	var s string // had var bax n5zn tour L1-E L2-A L3-o L4-t L5-h L6-0
+	for {
+		for i := 1; i <= a.nml; i++ {
+			in := strconv.Itoa(i)
+			if len(Mapcheck[in]) != 0 {
+				if !Chekslayce(sla, Mapcheck[in][0]) || a.end == Mapcheck[in][0] {
+					if Mapcheck[in][0] == a.end {
+						if Checkbool[fnd(sl, in)] {
+							continue
+						} else {
+							Checkbool[fnd(sl, in)] = true
+						}
+					}
+					sla = append(sla, Mapcheck[in][0])
+					if i == a.nml {
+						s += "L" + in + "-" + Mapcheck[in][0]
+					}else {
+						s += "L" + in + "-" + Mapcheck[in][0] + " "
+					}
+					Mapcheck[in] = Mapcheck[in][1:]
+				}
 			}
-			for x , _ := range Checkbool {
-				Checkbool[x] = false
-			}
-			
+
+		}
+		for x := range Checkbool {
+			Checkbool[x] = false
+		}
+
 		if s == "" {
 			break
 		}
@@ -89,11 +89,9 @@ func Print(Path *[][]string, a *info) {
 		s = ""
 		sla = nil
 	}
-	
-
-	
 }
-func fnd(sl [][]string,s string) int{
+
+func fnd(sl [][]string, s string) int {
 	for x, v := range sl {
 		for _, va := range v {
 			if va == s {
@@ -104,15 +102,13 @@ func fnd(sl [][]string,s string) int{
 	return 0
 }
 
-func Chekslayce(Path []string, s string,)bool {///nchof wax xi eliment m3awd
+func Chekslayce(Path []string, s string) bool { ///nchof wax xi eliment m3awd
 	for _, v := range Path {
 		if v == s {
 			return true
 		}
-		
 	}
 	return false
-
 }
 
 func main() {
@@ -181,6 +177,15 @@ func Parsing(fileName string, a *info) {
 			if len(ysf) == 3 {
 				if !uniRooms[ysf[0]] {
 					uniRooms[ysf[0]] = true
+					for inx, v := range ysf {
+						if inx != 0 {
+							_,err := strconv.Atoi(v)
+							if err != nil {
+								fmt.Println("ERROR: invalid data format")
+								return
+							}
+						} 
+					}
 				} else {
 					fmt.Println("room meawda a 3chiri")
 					return
@@ -223,27 +228,21 @@ func Parsing(fileName string, a *info) {
 				a.end = ysf[0]
 			}
 		}
-	
+
 	}
 	fmt.Println()
 
 	if len(a.end) == 0 || len(a.start) == 0 {
-		fmt.Println("ERROR: invalid data format")
-		return
-	}
-
-	if len(a.end) == 0 && len(a.start) == 0 {
 		fmt.Println("khoya!! start awla end ra mamlinkinch")
 		return
 	}
 
-
-	//fmt.Println(Link)
+	// fmt.Println(Link)
 	p := findAllPaths(a)
-	//fmt.Println(p)
+	// fmt.Println(p)
 
 	m := MesingPath(p)
-	//fmt.Println(m)
+	// fmt.Println(m)
 	Print(&m, a)
 }
 
@@ -277,7 +276,6 @@ func dfs(start, end string, visited map[string]bool, currentPath []string, paths
 				if !visited[neighbor] {
 					dfs(neighbor, end, visited, currentPath, paths, m)
 				}
-			
 			}
 		}
 
@@ -291,7 +289,7 @@ func MesingPath(paths [][]string) [][]string {
 	var pp [][]string
 	var p []int
 	var Nber int
-	//fmt.Println(paths)
+	// fmt.Println(paths)
 	for _, v := range paths {
 		for _, i := range v {
 			for _, j := range paths {
@@ -351,10 +349,10 @@ func check(path []string, mp *map[string]bool) bool {
 			for _, v := range temp {
 				delete((*mp), v)
 			}
-			//fmt.Println("false")
+			// fmt.Println("false")
 			return false
 		}
 	}
-	//fmt.Println("true")
+	// fmt.Println("true")
 	return true
 }
