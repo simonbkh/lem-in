@@ -27,41 +27,107 @@ func printer(mok *info, mat [][]string) {
 	mp := make(map[string]bool)
 	var p nmilaat
 	pathCost := []int{}
+
+	// Ensure mat is properly defined and populated
 	for _, v := range mat {
 		pathCost = append(pathCost, len(v[1:]))
 	}
+
 	for i := 1; i <= mok.nml; i++ {
 		p.name = i
+		if len(pathCost) == 0 {
+			break // Prevent panic if pathCost is empty
+		}
 		ii := slices.Index(pathCost, slices.Min(pathCost))
 		pathCost[ii]++
 		p.path = mat[ii][1:]
 		prt = append(prt, p)
 		p = nmilaat{}
-
 	}
+
+	count := 0
 	for {
-		for _, nmla := range prt {
-			if len(nmla.path) != 0 {
-				if nmla.room == mok.end {
-					fmt.Printf("L%d-%v ", nmla.name, mok.end)
-					nmla.path = []string{}
+		if count == len(prt) {
+			break
+		}
+
+		for i := range prt {
+			if prt[i].room == mok.end {
+				count++
+				continue
+			}
+			if len(prt[i].path) != 0 {
+				if mp[prt[i].room] {
+					// Room already visited, handle accordingly
 					continue
 				}
-				if mp[nmla.room] {
-					mp[nmla.room] = false
-				} else {
-					fmt.Printf("L%d-%v ", nmla.name, nmla.path[0])
-					nmla.room = nmla.path[0]
-					mp[nmla.path[0]] = true
-					nmla.path = nmla.path[0:]
+				mp[prt[i].room] = true // Mark room as visited
+				fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
+				prt[i].room = prt[i].path[0]
+				prt[i].path = prt[i].path[1:]
+				if prt[i].room == mok.end {
+					prt[i].path = []string{}
 				}
-
 			}
 		}
 	}
-	//fmt.Println(prt)
-	// fmt.Println(pathCost)
 }
+
+// func printer(mok *info, mat [][]string) {
+// 	mp := make(map[string]bool)
+// 	var p nmilaat
+// 	pathCost := []int{}
+// 	for _, v := range mat {
+// 		pathCost = append(pathCost, len(v[1:]))
+// 	}
+// 	for i := 1; i <= mok.nml; i++ {
+// 		p.name = i
+// 		ii := slices.Index(pathCost, slices.Min(pathCost))
+// 		pathCost[ii]++
+// 		p.path = mat[ii][1:]
+// 		prt = append(prt, p)
+// 		p = nmilaat{}
+
+// 	}
+// 	count := 0
+// 	for {
+// 		// fmt.Println("")
+// 		// fmt.Println(count)
+// 		// fmt.Println("")
+// 		if count == len(prt) {
+// 			break
+// 		}
+
+// 		for i, _ := range prt {
+
+// 			if prt[i].room == mok.end {
+// 				count++
+// 				continue
+// 			}
+// 			if len(prt[i].path) != 0 {
+
+// 				if mp[prt[i].room] {
+// 					mp[prt[i].room] = false
+// 					fmt.Println("")
+// 				}
+// 				mp[prt[i].path[0]] = true
+// 				fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
+// 				prt[i].room = prt[i].path[0]
+// 				prt[i].path = prt[i].path[1:]
+// 				//fmt.Println(prt[i].path, prt[i].path)
+// 				if prt[i].room == mok.end {
+// 					//fmt.Printf("L%d-%v ", prt[i].name, mok.end)
+// 					prt[i].path = []string{}
+// 				}
+
+// 			}
+// 		}
+// 		//fmt.Println(prt, count)
+// 	}
+
+// 	//fmt.Println(prt)
+// 	// fmt.Println(pathCost)
+// }
 
 var Link = make(map[string][]string)
 
