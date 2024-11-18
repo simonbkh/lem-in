@@ -177,9 +177,9 @@ func CheckCordone(sl []string) bool {
 
 func CheckPath() {
 	var path [][]string
-	// checkDfs(&path, mok.start, []string{})
-	Bfs(&path)
-	// fmt.Println(path)
+	checkDfs(&path, mok.start, []string{})
+	// Bfs(&path)
+	fmt.Println(path)
 }
 
 var roms = map[string]bool{}
@@ -240,7 +240,7 @@ func Bfs(path *[][]string, start string, sl []string) {
 func backtrackPath(visited map[string][]string, end string, paths *[][]string, path []string) {
 	current := end
 	path = append(path, current)
-	if current == "1" || (len(*paths)!=0 && slices.Contains(*paths[0],current)){
+	if current == "1" || (len(*paths)!=0 && slices.Contains(path,current)){
 		*paths = append(*paths, path)
 	} else {
 		for _, v := range visited[current] {
