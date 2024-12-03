@@ -1,5 +1,7 @@
 package Lem
 
+import "slices"
+
 func findAllPaths(m *info) [][]string {
 	var paths [][]string
 	visited := make(map[string]bool)
@@ -10,31 +12,27 @@ func findAllPaths(m *info) [][]string {
 func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string, m *info) {
 	visited[start] = true
 	currentPath = append(currentPath, start)
-
 	if start == end {
 		*paths = append(*paths, append([]string{}, currentPath...))
 	} else {
-		good := false
-		if start != m.start {
-			for _, v := range Link[start] {
-				if v == end {
-					good = true
-					currentPath = append(currentPath, v)
-					*paths = append(*paths, append([]string{}, currentPath...))
-					break
-				}
-			}
+	ind := -1
+	if start != m.start {
+		ind = slices.Index(Link[start], end)
+		if ind != -1 {
+			currentPath = append(currentPath, Link[start][ind])
+			*paths = append(*paths, append([]string{}, currentPath...))
 		}
-		if !good {
-			for _, neighbor := range Link[start] {
-				if !visited[neighbor] {
-					dfs(neighbor, end, visited, currentPath, paths, m)
-				}
-			}
-		}
-
 	}
+
+	if ind == -1 {
+		for _, neighbor := range Link[start] {
+			if !visited[neighbor] {
+				dfs(neighbor, end, visited, currentPath, paths, m)
+			}
+		}
+	}
+}
 
 	visited[start] = false
 	// currentPath = currentPath[:len(currentPath)-1]
-}
+} // currentPath = currentPath[:len(currentPath)-1]
