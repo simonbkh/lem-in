@@ -21,16 +21,16 @@ type nmilaat struct {
 	room string
 }
 
-var prt []nmilaat
-
 func printer(mok *info, mat [][]string) {
-	mp := make(map[string]bool)
+	var prt []nmilaat
+	//fmt.Println(mok.nml)
+
 	var p nmilaat
 	pathCost := []int{}
 
 	// Ensure mat is properly defined and populated
 	for _, v := range mat {
-		pathCost = append(pathCost, len(v[1:]))
+		pathCost = append(pathCost, len(v))
 	}
 
 	for i := 1; i <= mok.nml; i++ {
@@ -40,38 +40,84 @@ func printer(mok *info, mat [][]string) {
 		}
 		ii := slices.Index(pathCost, slices.Min(pathCost))
 		pathCost[ii]++
-		p.path = mat[ii][1:]
+		p.path = mat[ii][1 : len(mat[ii])-1]
+		p.room = mat[ii][0]
 		prt = append(prt, p)
 		p = nmilaat{}
 	}
-
-	count := 0
-	for {
-		if count == len(prt) {
-			break
-		}
-
+	sl := []int{}
+	////////
+	fmt.Println(prt)
+	////////
+	
+	for len(prt) > 0{
+		first := false
+		mp := make(map[string]bool)
 		for i := range prt {
-			if prt[i].room == mok.end {
-				count++
+
+			if slices.Contains(sl, i) {
+				//fmt.Println(count)
 				continue
 			}
+
 			if len(prt[i].path) != 0 {
-				if mp[prt[i].room] {
-					// Room already visited, handle accordingly
+				if !mp[prt[i].path[0]] {
+					mp[prt[i].path[0]] = true
+					fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
+					prt[i].path = prt[i].path[1:]
+				} else {
 					continue
 				}
-				mp[prt[i].room] = true // Mark room as visited
-				fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
-				prt[i].room = prt[i].path[0]
-				prt[i].path = prt[i].path[1:]
-				if prt[i].room == mok.end {
-					prt[i].path = []string{}
+			} else {
+
+				if !first {
+					first = true
+					fmt.Printf("L%d-%v ", prt[i].name, mok.end)
+					if !slices.Contains(sl, i) {
+						sl = append(sl, i)
+						//prt = append(prt[:i], prt[i+1:]... )
+
+					}
 				}
+
 			}
 		}
+		fmt.Println()
+
 	}
+
 }
+
+//count := 0
+// 	for len(prt) != 0 {
+// 		// if count == len(prt) {
+// 		// 	break
+// 		// }
+
+// 		for i := range prt {
+// 			if v.room == mok.end {
+// 				fmt.Printf("L%d-%v ", v.name, v.room)
+// 				prt = slices.Delete(prt, i, i+1)
+// 				continue
+// 			}
+// 			if len(v.path) != 0 {
+// 				if v.room == mok.end {
+// 					v.path = []string{}
+// 					fmt.Printf("L%d-%v ", v.name, v.room)
+// 					continue
+// 				}
+
+// 				v.path = v.path[1:]
+// 				fmt.Println(v.path[0])
+// 				//mp[v.room] = true // Mark room as visited
+// 				fmt.Printf("L%d-%v ", v.name, v.path[0])
+// 				v.room = v.path[0]
+// 				//v.path = v.path[1:]
+
+// 			}
+// 		}
+// 	}
+// }
 
 // func printer(mok *info, mat [][]string) {
 // 	mp := make(map[string]bool)
@@ -100,24 +146,24 @@ func printer(mok *info, mat [][]string) {
 
 // 		for i, _ := range prt {
 
-// 			if prt[i].room == mok.end {
+// 			if v.room == mok.end {
 // 				count++
 // 				continue
 // 			}
-// 			if len(prt[i].path) != 0 {
+// 			if len(v.path) != 0 {
 
-// 				if mp[prt[i].room] {
-// 					mp[prt[i].room] = false
+// 				if mp[v.room] {
+// 					mp[v.room] = false
 // 					fmt.Println("")
 // 				}
-// 				mp[prt[i].path[0]] = true
-// 				fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
-// 				prt[i].room = prt[i].path[0]
-// 				prt[i].path = prt[i].path[1:]
-// 				//fmt.Println(prt[i].path, prt[i].path)
-// 				if prt[i].room == mok.end {
-// 					//fmt.Printf("L%d-%v ", prt[i].name, mok.end)
-// 					prt[i].path = []string{}
+// 				mp[v.path[0]] = true
+// 				fmt.Printf("L%d-%v ", v.name, v.path[0])
+// 				v.room = v.path[0]
+// 				v.path = v.path[1:]
+// 				//fmt.Println(v.path, v.path)
+// 				if v.room == mok.end {
+// 					//fmt.Printf("L%d-%v ", v.name, mok.end)
+// 					v.path = []string{}
 // 				}
 
 // 			}
