@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -16,8 +17,9 @@ type info struct {
 
 var Link = make(map[string][]string)
 
-func Parsing(fileName string, a *info) {
+func Parsing(fileName string) {
 	var st, fin bool
+	var a info
 	uniRooms := make(map[string]bool)
 	Rooms := make(map[string]string)
 	file, err := os.Open(fileName)
@@ -43,8 +45,6 @@ func Parsing(fileName string, a *info) {
 				fmt.Println("ERROR: invalid data format")
 				return
 			}
-
-			fmt.Println(a.nml)
 			i++
 			continue
 		}
@@ -102,7 +102,7 @@ func Parsing(fileName string, a *info) {
 						} else {
 							fmt.Println("ERROR: invalid data format, repeated Link")
 							return
-						} 
+						}
 
 					} else {
 						fmt.Println("ERROR: invalid data format, invalid Link")
@@ -147,11 +147,16 @@ func Parsing(fileName string, a *info) {
 		return
 	}
 
-	fmt.Println(Link)
-	fmt.Println(Rooms)
-	p := findAllPaths(a)
-	fmt.Println(p)
+	// fmt.Println(Link)
+	// fmt.Println(Rooms)
+	p := findAllPaths(&a)
+	// fmt.Println(p)
 
-	m := MesingPath(p)
-	fmt.Println(m)
+	MesingPath := MesingPath(p)
+	 fil , errr :=os.ReadFile("test/t00.txt")
+	 if errr != nil{
+		fmt.Fprintln(os.Stderr, "ERROR reading file")
+	 }
+	 fmt.Println(string(fil)+"\n")
+	Print(&MesingPath, &a)
 }
