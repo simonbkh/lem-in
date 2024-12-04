@@ -16,11 +16,10 @@ type info struct {
 
 var Link = make(map[string][]string)
 
-func Parsing(fileName string) {
-	var stok string
-	var a info
+func Parsing(fileName string, a *info) {
 	var st, fin bool
 	uniRooms := make(map[string]bool)
+	Rooms := make(map[string]string)
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -32,7 +31,6 @@ func Parsing(fileName string) {
 	i := 0
 
 	for scanner.Scan() {
-		stok += scanner.Text()+"\n"
 		if i == 0 {
 			nmilat, err := strconv.Atoi(scanner.Text())
 			if err != nil {
@@ -46,6 +44,7 @@ func Parsing(fileName string) {
 				return
 			}
 
+			fmt.Println(a.nml)
 			i++
 			continue
 		}
@@ -69,37 +68,48 @@ func Parsing(fileName string) {
 			}
 			continue
 		}
-		ysf := strings.Fields(scanner.Text())
+		room := strings.Fields(scanner.Text())
 		if scanner.Text() != "" {
-			if len(ysf) == 3 {
-				if !uniRooms[ysf[0]] {
-					uniRooms[ysf[0]] = true
-					for inx, v := range ysf {
-						if inx != 0 {
-							_, err := strconv.Atoi(v)
-							if err != nil {
-								fmt.Println("ERROR: invalid data format")
-								return
-							}
+			if len(room) == 3 {
+				if !uniRooms[room[0]] && !strings.HasPrefix(room[0], "L") {
+					_, err := strconv.Atoi(room[1])
+					_, er := strconv.Atoi(room[2])
+					if err == nil && er == nil {
+						uniRooms[room[0]] = true
+						if _, ok := Rooms[strings.Join(room[1:], " ")]; !ok {
+							Rooms[strings.Join(room[1:], " ")] = room[0]
+						} else {
+							fmt.Println("ERROR: invalid data format, invalid coordinates")
+							return
 						}
+					} else {
+						fmt.Println("ERROR: invalid data format, invalid coordinates")
+						return
 					}
+
 				} else {
-					fmt.Println("room meawda a 3chiri")
+					fmt.Println("ERROR: invalid data format, invalid Rooms")
 					return
 				}
-			} else if len(ysf) == 1 && st && fin {
+			} else if len(room) == 1 && st && fin {
 				lin := strings.Split(scanner.Text(), "-")
 				if len(lin) == 2 {
-					if uniRooms[lin[0]] && uniRooms[lin[1]] { 
-						Link[lin[0]] = append(Link[lin[0]], lin[1])
-						Link[lin[1]] = append(Link[lin[1]], lin[0])
+					if uniRooms[lin[0]] && uniRooms[lin[1]] && lin[0] != lin[1] {
+						ind := slices.Index(Link[lin[0]], lin[1])
+						if ind == -1 {
+							Link[lin[0]] = append(Link[lin[0]], lin[1])
+							Link[lin[1]] = append(Link[lin[1]], lin[0])
+						} else {
+							fmt.Println("ERROR: invalid data format, repeated Link")
+							return
+						} 
 
 					} else {
-						fmt.Println("ERROR: room mam3rofach", scanner.Text())
+						fmt.Println("ERROR: invalid data format, invalid Link")
 						return
 					}
 				} else {
-					fmt.Println("ERROR$$: invalid data format")
+					fmt.Println("ERROR: invalid data format, invalid Link")
 					return
 				}
 
@@ -108,36 +118,40 @@ func Parsing(fileName string) {
 				return
 			}
 		} else {
-			fmt.Println("ERROR^: invalid data format")
+			fmt.Println("ERROR: invalid data format")
 			return
 		}
 		if st && len(a.start) == 0 {
-			if len(ysf) != 3 {
+			if len(room) != 3 {
 				fmt.Println("ERROR': invalid data format")
 				return
 			}
 			if len(a.start) == 0 {
-				a.start = ysf[0]
+				a.start = room[0]
 			}
 		}
 		if fin && len(a.end) == 0 {
-			if len(ysf) == 3 {
-				a.end = ysf[0]
+			if len(room) == 3 {
+				a.end = room[0]
 			}
 		}
-
 	}
-	fmt.Println(stok)
 
 	if len(a.end) == 0 || len(a.start) == 0 {
-		fmt.Println("khoya!! start awla end ra mamlinkinch")
+		fmt.Println("ERROR: invalid data format")
 		return
 	}
 
-	paths := findAllPaths(&a)
-	
+	if len(a.end) == 0 && len(a.start) == 0 {
+		fmt.Println("ERROR, invalid data format start or end rooms aren't connected")
+		return
+	}
 
-	MesingPath := MesingPath(paths)
-	
-	Print(&MesingPath, &a)
+	fmt.Println(Link)
+	fmt.Println(Rooms)
+	p := findAllPaths(a)
+	fmt.Println(p)
+
+	m := MesingPath(p)
+	fmt.Println(m)
 }
