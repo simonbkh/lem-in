@@ -79,12 +79,12 @@ import (
 type nmilaat struct {
 	name int
 	path []string
-	room int
+	ind int
 }
 
 func Print(mok *info, paths [][]string) {
-	var prt []nmilaat
-	var p nmilaat
+	var antData []nmilaat
+	var temp nmilaat
 	pathCost := []int{}
 
 	// Ensure paths is properly defined and populated
@@ -93,19 +93,16 @@ func Print(mok *info, paths [][]string) {
 	}
 
 	for i := 1; i <= mok.nml; i++ {
-		p.name = i
-		if len(pathCost) == 0 {
-			return // Prevent panic if pathCost is empty
-		}
+		temp.name = i
 		ii := slices.Index(pathCost, slices.Min(pathCost))
 		pathCost[ii]++
-		p.path = paths[ii][:len(paths[ii])-1]
-		p.room = ii
-		prt = append(prt, p)
-		p = nmilaat{}
+		temp.path = paths[ii][:len(paths[ii])-1]
+		temp.ind = ii
+		antData = append(antData, temp)
+		temp = nmilaat{}
 	}
-	fmt.Println(prt)
-	sl := []int{}
+	fmt.Println(antData)
+	skippable := []int{}
 	done := 0
 	for {
 		if done == -1 {
@@ -115,29 +112,27 @@ func Print(mok *info, paths [][]string) {
 
 		arr := make([]bool, len(paths))
 		mp := make(map[string]bool)
-		for i := range prt {
-			if len(prt[i].path) != 0 {
+		for i := range antData {
+			if len(antData[i].path) != 0 {
 				done = 0
 			}
-			if slices.Contains(sl, i) {
+			if slices.Contains(skippable, i) {
 				continue
 			}
 
-			if len(prt[i].path) != 0 {
-				if !mp[prt[i].path[0]] {
-					mp[prt[i].path[0]] = true
-					fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
-					prt[i].path = prt[i].path[1:]
+			if len(antData[i].path) != 0 {
+				if !mp[antData[i].path[0]] {
+					mp[antData[i].path[0]] = true
+					fmt.Printf("L%d-%v ", antData[i].name, antData[i].path[0])
+					antData[i].path = antData[i].path[1:]
 				} 
-			} else {
-		
-					
-				if !arr[prt[i].room]{
-					arr[prt[i].room] = true
-					fmt.Printf("L%d-%v ", prt[i].name, mok.end)
-					if !slices.Contains(sl, i) {
-						sl = append(sl, i)
-						// prt = append(prt[:i], prt[i+1:]... )
+			} else {	
+				if !arr[antData[i].ind]{
+					arr[antData[i].ind] = true
+					fmt.Printf("L%d-%v ", antData[i].name, mok.end)
+					if !slices.Contains(skippable, i) {
+						skippable = append(skippable, i)
+						// antData = append(antData[:i], antData[i+1:]... )
 					}
 				}
 				
