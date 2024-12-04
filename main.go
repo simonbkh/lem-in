@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -12,6 +13,75 @@ type info struct {
 	nml   int
 	start string
 	end   string
+}
+
+type nmilaat struct {
+	name int
+	path []string
+	room string
+}
+
+func printer(mok *info, mat [][]string) {
+	var prt []nmilaat
+	// fmt.Println(mok.nml)
+
+	var p nmilaat
+	pathCost := []int{}
+
+	// Ensure mat is properly defined and populated
+	for _, v := range mat {
+		pathCost = append(pathCost, len(v))
+	}
+
+	for i := 1; i <= mok.nml; i++ {
+		p.name = i
+		if len(pathCost) == 0 {
+			break // Prevent panic if pathCost is empty
+		}
+		ii := slices.Index(pathCost, slices.Min(pathCost))
+		pathCost[ii]++
+		p.path = mat[ii][1 : len(mat[ii])-1]
+		p.room = mat[ii][0]
+		prt = append(prt, p)
+		p = nmilaat{}
+	}
+	sl := []int{}
+	////////
+	fmt.Println(prt)
+	////////
+
+	for len(prt) > 0 {
+		first := false
+		mp := make(map[string]bool)
+		for i := range prt {
+
+			if slices.Contains(sl, i) {
+				// fmt.Println(count)
+				continue
+			}
+
+			if len(prt[i].path) != 0 {
+				if !mp[prt[i].path[0]] {
+					mp[prt[i].path[0]] = true
+					fmt.Printf("L%d-%v ", prt[i].name, prt[i].path[0])
+					prt[i].path = prt[i].path[1:]
+				} else {
+					continue
+				}
+			} else {
+				if !first {
+					first = true
+					fmt.Printf("L%d-%v ", prt[i].name, mok.end)
+					if !slices.Contains(sl, i) {
+						sl = append(sl, i)
+						// prt = append(prt[:i], prt[i+1:]... )
+					}
+				}
+			}
+		}
+		fmt.Println()
+
+	}
 }
 
 var Link = make(map[string][]string)
@@ -29,6 +99,7 @@ func main() {
 func Parsing(fileName string, a *info) {
 	var st, fin bool
 	uniRooms := make(map[string]bool)
+	Rooms := make(map[string]string)
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -77,28 +148,48 @@ func Parsing(fileName string, a *info) {
 			}
 			continue
 		}
-		ysf := strings.Fields(scanner.Text())
+		room := strings.Fields(scanner.Text())
 		if scanner.Text() != "" {
-			if len(ysf) == 3 {
-				if !uniRooms[ysf[0]] {
-					uniRooms[ysf[0]] = true
+			if len(room) == 3 {
+				if !uniRooms[room[0]] && !strings.HasPrefix(room[0], "L") {
+					_, err := strconv.Atoi(room[1])
+					_, er := strconv.Atoi(room[2])
+					if err == nil && er == nil {
+						uniRooms[room[0]] = true
+						if _, ok := Rooms[strings.Join(room[1:], " ")]; !ok {
+							Rooms[strings.Join(room[1:], " ")] = room[0]
+						} else {
+							fmt.Println("ERROR: invalid data format, invalid coordinates")
+							return
+						}
+					} else {
+						fmt.Println("ERROR: invalid data format, invalid coordinates")
+						return
+					}
+
 				} else {
-					fmt.Println("room meawda a 3chiri")
+					fmt.Println("ERROR: invalid data format, invalid Rooms")
 					return
 				}
-			} else if len(ysf) == 1 && st && fin {
+			} else if len(room) == 1 && st && fin {
 				lin := strings.Split(scanner.Text(), "-")
 				if len(lin) == 2 {
-					if uniRooms[lin[0]] && uniRooms[lin[1]] { // nfekro flm3awda!
-						Link[lin[0]] = append(Link[lin[0]], lin[1])
-						Link[lin[1]] = append(Link[lin[1]], lin[0])
+					if uniRooms[lin[0]] && uniRooms[lin[1]] && lin[0] != lin[1] {
+						ind := slices.Index(Link[lin[0]], lin[1])
+						if ind == -1 {
+							Link[lin[0]] = append(Link[lin[0]], lin[1])
+							Link[lin[1]] = append(Link[lin[1]], lin[0])
+						} else {
+							fmt.Println("ERROR: invalid data format, repeated Link")
+							return
+						} 
 
 					} else {
-						fmt.Println("ERROR: room mam3rofach", scanner.Text())
+						fmt.Println("ERROR: invalid data format, invalid Link")
 						return
 					}
 				} else {
-					fmt.Println("ERROR$$: invalid data format")
+					fmt.Println("ERROR: invalid data format, invalid Link")
 					return
 				}
 
@@ -107,21 +198,21 @@ func Parsing(fileName string, a *info) {
 				return
 			}
 		} else {
-			fmt.Println("ERROR^: invalid data format")
+			fmt.Println("ERROR: invalid data format")
 			return
 		}
 		if st && len(a.start) == 0 {
-			if len(ysf) != 3 {
+			if len(room) != 3 {
 				fmt.Println("ERROR': invalid data format")
 				return
 			}
 			if len(a.start) == 0 {
-				a.start = ysf[0]
+				a.start = room[0]
 			}
 		}
 		if fin && len(a.end) == 0 {
-			if len(ysf) == 3 {
-				a.end = ysf[0]
+			if len(room) == 3 {
+				a.end = room[0]
 			}
 		}
 	}
@@ -132,11 +223,12 @@ func Parsing(fileName string, a *info) {
 	}
 
 	if len(a.end) == 0 && len(a.start) == 0 {
-		fmt.Println("khoya!! start awla end ra mamlinkinch")
+		fmt.Println("ERROR, invalid data format start or end rooms aren't connected")
 		return
 	}
 
 	fmt.Println(Link)
+	fmt.Println(Rooms)
 	p := findAllPaths(a)
 	fmt.Println(p)
 
@@ -154,7 +246,6 @@ func findAllPaths(m *info) [][]string {
 func dfs(start, end string, visited map[string]bool, currentPath []string, paths *[][]string, m *info) {
 	visited[start] = true
 	currentPath = append(currentPath, start)
-	
 
 	if start == end {
 		*paths = append(*paths, append([]string{}, currentPath...))
@@ -172,7 +263,6 @@ func dfs(start, end string, visited map[string]bool, currentPath []string, paths
 		}
 		if !good {
 			for _, neighbor := range Link[start] {
-
 				if !visited[neighbor] {
 					dfs(neighbor, end, visited, currentPath, paths, m)
 				}
@@ -224,20 +314,20 @@ func Small(p *[]int) int {
 	var index int
 	min = (*p)[0]
 	for r, v := range *p {
-		if min == -1  && v !=-1{
+		if min == -1 && v != -1 {
 			min = v
 			index = r
 		}
-		if v == -1{
+		if v == -1 {
 			continue
 		}
-		if v < min  {
+		if v < min {
 			min = v
 			index = r
 		}
 	}
 	(*p)[index] = -1
-	//fmt.Println(*p)
+	// fmt.Println(*p)
 	return index
 }
 
