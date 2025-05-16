@@ -15,24 +15,23 @@ func dfs(start, end string, visited map[string]bool, currentPath []string, paths
 	if start == end {
 		*paths = append(*paths, append([]string{}, currentPath...))
 	} else {
-	ind := -1
-	if start != m.start {
-		ind = slices.Index(Link[start], end)
-		if ind != -1 {
-			currentPath = append(currentPath, Link[start][ind])
-			*paths = append(*paths, append([]string{}, currentPath...))
+		ind := -1
+		if start != m.start {
+			ind = slices.Index(Link[start], end)
+			if ind != -1 {
+				currentPath = append(currentPath, Link[start][ind])
+				*paths = append(*paths, append([]string{}, currentPath...))
+			}
 		}
-	}
 
-	if ind == -1 {
-		for _, neighbor := range Link[start] {
-			if !visited[neighbor] {
-				dfs(neighbor, end, visited, currentPath, paths, m)
+		if ind == -1 {
+			for _, neighbor := range Link[start] {
+				if !visited[neighbor] {
+					dfs(neighbor, end, visited, currentPath, paths, m)
+				}
 			}
 		}
 	}
-}
 
 	visited[start] = false
-	// currentPath = currentPath[:len(currentPath)-1]
-} // currentPath = currentPath[:len(currentPath)-1]
+}

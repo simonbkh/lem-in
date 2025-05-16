@@ -3,19 +3,17 @@ package Lem
 import (
 	"fmt"
 	"slices"
-	"strings"
 )
-
 
 type nmilaat struct {
 	name int
 	path []string
-	ind int
+	room int
 }
 
-func Print(mok *info, paths [][]string) {
-	var antData []nmilaat
-	var temp nmilaat
+func Print(inf *info, paths [][]string) {
+	var prt []nmilaat
+	var p nmilaat
 	pathCost := []int{}
 
 	// Ensure paths is properly defined and populated
@@ -23,50 +21,57 @@ func Print(mok *info, paths [][]string) {
 		pathCost = append(pathCost, len(v))
 	}
 
-	for i := 1; i <= mok.nml; i++ {
-		temp.name = i
+	for i := 1; i <= inf.nml; i++ {
+		p.name = i
+		if len(pathCost) == 0 {
+			return // Prevent panic if pathCost is empty
+		}
 		ii := slices.Index(pathCost, slices.Min(pathCost))
 		pathCost[ii]++
-		temp.path = paths[ii][:len(paths[ii])-1]
-		temp.ind = ii
-		antData = append(antData, temp)
-		temp = nmilaat{}
+		p.path = paths[ii][:len(paths[ii])-1]
+		p.room = ii
+		prt = append(prt, p)
+		p = nmilaat{}
 	}
-	skippable := []int{}
 
+	sl := []int{}
+	// done := 0
+	s := ""
 	for {
-		s := ""
-	
+		// if done == -1 {
+		// 	break
+		// }
+		// done = -1
 
 		arr := make([]bool, len(paths))
 		mp := make(map[string]bool)
-		for i := range antData {
-		
-			if slices.Contains(skippable, i) {
+		for i := range prt {
+
+			if slices.Contains(sl, i) {
 				continue
 			}
 
-			if len(antData[i].path) != 0 {
-				if !mp[antData[i].path[0]] {
-					mp[antData[i].path[0]] = true
-					s +=fmt.Sprintf("L%d-%v ", antData[i].name, antData[i].path[0])
-					antData[i].path = antData[i].path[1:]
-				} 
-			} else {	
-				if !arr[antData[i].ind]{
-					arr[antData[i].ind] = true
-					s +=fmt.Sprintf("L%d-%v ", antData[i].name, mok.end)
-					if !slices.Contains(skippable, i) {
-						skippable = append(skippable, i)
-					}
+			if len(prt[i].path) != 0 {
+				// done = 0
+				if !mp[prt[i].path[0]] {
+					mp[prt[i].path[0]] = true
+					s += fmt.Sprintf("L%d-%v ", prt[i].name, prt[i].path[0])
+					prt[i].path = prt[i].path[1:]
 				}
-				
+			} else {
+				if !arr[prt[i].room] {
+					arr[prt[i].room] = true
+					s += fmt.Sprintf("L%d-%v ", prt[i].name, inf.end)
+					sl = append(sl, i)
+
+				}
 			}
 		}
 		if s == "" {
 			break
 		}
-		fmt.Println(strings.TrimSpace(s))
+		fmt.Println(s[:len(s)-1])
 		s = ""
+
 	}
 }

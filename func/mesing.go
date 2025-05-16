@@ -28,11 +28,10 @@ func MesingPath(paths [][]string) [][]string {
 		}
 	}
 
-	// pp = append(pp, paths[index])
 	return MesingPath
 }
 
-func Small(ScorofPathe*[]int) int {
+func Small(ScorofPathe *[]int) int {
 	var minscor int
 	var index int
 	minscor = (*ScorofPathe)[0]
@@ -50,11 +49,10 @@ func Small(ScorofPathe*[]int) int {
 		}
 	}
 	(*ScorofPathe)[index] = -1
-	// fmt.Println(*p)
 	return index
 }
 
-func check(path []string,CheckVisited *map[string]bool) bool {
+func check(path []string, CheckVisited *map[string]bool) bool {
 	temp := []string{}
 	for _, room := range path {
 		if !(*CheckVisited)[room] {
@@ -64,10 +62,8 @@ func check(path []string,CheckVisited *map[string]bool) bool {
 			for _, v := range temp {
 				delete((*CheckVisited), v)
 			}
-			// fmt.Println("false")
 			return false
 		}
 	}
-	// fmt.Println("true")
 	return true
 }

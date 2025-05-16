@@ -146,9 +146,9 @@ func Parsing(fileName string) {
 		fmt.Println("ERROR, invalid data format start or end rooms aren't connected")
 		return
 	}
-	p := findAllPaths(&a)
+	path := findAllPaths(&a)
 
-	MesingPath := MesingPath(p)
+	MesingPath := MesingPath(path)
 	fil, errr := os.ReadFile("test/t00.txt")
 	if errr != nil {
 		fmt.Fprintln(os.Stderr, "ERROR reading file")
